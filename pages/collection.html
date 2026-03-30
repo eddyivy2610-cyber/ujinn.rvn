@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collection — UJINN.RVN Premium Nigerian Fashion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="../assets/css/home.css">
+<link rel="stylesheet" href="../assets/css/collection.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="loader-logo">UJINN.RVN</div></div>
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg">Added to cart</span></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">
+    <img src="assets/images/UJINN.RVN.png" alt="UJINN.RVN Logo">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Collection</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <div class="nav-icons">
+    <button title="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+    <button title="Wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+    <div class="cart-badge">
+      <button title="Cart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></button>
+      <span id="cartCount">0</span>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header reveal">
+  <p class="page-eyebrow">Shop Our Collection</p>
+  <h1 class="page-title">The Archive</h1>
+  <p class="page-desc">A curated selection of refined essentials for the modern Nigerian gentleman. Each piece is crafted with intention, balancing timeless design with contemporary sensibility.</p>
+</div>
+
+<!-- FILTER TABS -->
+<div class="filter-tabs">
+  <button class="filter-tab active" onclick="filterProducts(this,'all')">All</button>
+  <button class="filter-tab" onclick="filterProducts(this,'tops')">Tops</button>
+  <button class="filter-tab" onclick="filterProducts(this,'bottoms')">Bottoms</button>
+  <button class="filter-tab" onclick="filterProducts(this,'accessories')">Accessories</button>
+  <button class="filter-tab" onclick="filterProducts(this,'footwear')">Footwear</button>
+</div>
+
+<!-- PRODUCT GRID -->
+<div class="product-grid" id="productGrid"></div>
+
+<!-- NEWSLETTER -->
+<div class="newsletter reveal">
+  <p class="section-label">Stay in the Loop</p>
+  <h2 class="newsletter-title">Get Special Offers</h2>
+  <p class="newsletter-desc">Subscribe for early access to new drops, exclusive discounts, and style inspiration.</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="Enter your email address..." id="emailInput">
+    <button onclick="subscribe()">Subscribe</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo-wrap"><img src="assets/logo-white.png" alt="UJINN.RVN" id="footerLogoImg" onerror="this.src='https://placehold.co/200x60/ffffff/1a3a6b?text=UJINN.RVN'"></div>
+      <p class="footer-tagline">Premium fashion for the modern Nigerian man. Quality craftsmanship, timeless design.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-link">f</a>
+        <a href="#" class="social-link">tw</a>
+        <a href="#" class="social-link">in</a>
+        <a href="#" class="social-link">yt</a>
+      </div>
+    </div>
+    <div class="footer-col"><h5>About Us</h5><ul><li><a href="#">About us</a></li><li><a href="#">Store location</a></li><li><a href="#">Contact</a></li><li><a href="#">Orders tracking</a></li></ul></div>
+    <div class="footer-col"><h5>Useful Links</h5><ul><li><a href="#">Returns</a></li><li><a href="#">Support Policy</a></li><li><a href="#">Size Guide</a></li><li><a href="#">FAQs</a></li></ul></div>
+    <div class="footer-col"><h5>Follow Us</h5><ul><li><a href="#">Facebook</a></li><li><a href="#">Twitter</a></li><li><a href="#">Instagram</a></li><li><a href="#">Youtube</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 UJINN.RVN. All Rights Reserved.</span>
+    <div style="display:flex;gap:20px;"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div>
+  </div>
+</footer>
+
+<script src="../assets/js/products-data.js"></script>
+<script src="../assets/js/collection.js"></script>
+<script src="../assets/js/sync-header-footer.js"></script>
+</body>
+</html>

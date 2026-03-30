@@ -1,0 +1,307 @@
+/* collection.css */
+/* Unique styles for Collection page only - complements existing homepage styles */
+
+/* ===== PAGE HEADER ===== */
+/* This section is unique to collection page - homepage doesn't have this */
+.page-header {
+  text-align: center;
+  padding: 80px 40px 48px;
+  background: var(--white);
+
+}
+
+.page-eyebrow {
+  font-size: 10.5px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--mid-gray);
+  font-weight: 400;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.page-eyebrow::before,
+.page-eyebrow::after {
+  content: '';
+  width: 36px;
+  height: 1px;
+  background: var(--warm-gray);
+}
+
+.page-title {
+  font-family: var(--serif);
+  font-size: clamp(42px, 5vw, 64px);
+  font-weight: 300;
+  color: var(--black);
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+  line-height: 1.1;
+}
+
+.page-desc {
+  font-size: 14px;
+  color: var(--mid-gray);
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+/* ===== PRODUCT GRID VARIATIONS ===== */
+/* Collection page has more products, so we adjust transition delays */
+.product-card {
+  transition-delay: 0s;
+}
+
+/* Different stagger timing for larger collections */
+.product-card:nth-child(n) {
+  transition-delay: calc(var(--card-index, 0) * 0.03s);
+}
+
+/* ===== LOAD MORE BUTTON (Optional Feature) ===== */
+/* Add this if you want to paginate the collection */
+.load-more {
+  text-align: center;
+  padding: 40px 40px 80px;
+}
+
+.btn-load-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  color: var(--text);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-family: var(--sans);
+  border: 1px solid var(--warm-gray);
+  padding: 14px 36px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-load-more:hover {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+  gap: 16px;
+}
+
+/* ===== SORTING DROPDOWN (Optional Feature) ===== */
+/* Add a sorting option for larger collections */
+.collection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 40px 32px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.collection-results {
+  font-size: 12px;
+  color: var(--mid-gray);
+  letter-spacing: 0.04em;
+}
+
+.sort-select {
+  background: transparent;
+  border: 1px solid var(--warm-gray);
+  padding: 8px 16px;
+  font-size: 11px;
+  font-family: var(--sans);
+  letter-spacing: 0.04em;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.sort-select:hover,
+.sort-select:focus {
+  border-color: var(--black);
+  outline: none;
+}
+
+/* ===== ACTIVE FILTER COUNT BADGE ===== */
+/* Shows how many items are active in current filter */
+.active-filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: white;
+  font-size: 9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin-left: 6px;
+}
+
+/* ===== EMPTY STATE ===== */
+/* When no products match the selected filter */
+.empty-state {
+  text-align: center;
+  padding: 80px 40px;
+  grid-column: 1 / -1;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  opacity: 0.3;
+}
+
+.empty-state-title {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 300;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.empty-state-desc {
+  font-size: 13px;
+  color: var(--mid-gray);
+  margin-bottom: 24px;
+}
+
+.empty-state-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--white);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.empty-state-btn:hover {
+  background: var(--accent2);
+}
+
+/* ===== QUICK VIEW MODAL (Optional) ===== */
+/* For product quick view feature on collection page */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.quick-view-modal {
+  background: var(--white);
+  max-width: 900px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  transform: translateY(30px);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.active .quick-view-modal {
+  transform: translateY(0);
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--mid-gray);
+  transition: color 0.2s;
+  z-index: 10;
+}
+
+.modal-close:hover {
+  color: var(--black);
+}
+
+/* ===== RESPONSIVE OVERRIDES ===== */
+/* Collection page specific responsive adjustments */
+@media (max-width: 1024px) {
+  .collection-header {
+    margin: 0 20px 24px;
+  }
+  
+  .filter-tabs {
+    margin: 0 20px 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    padding: 60px 20px 40px;
+  }
+  
+  .page-title {
+    font-size: clamp(36px, 8vw, 48px);
+  }
+  
+  .page-desc {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  
+  .filter-tab {
+    padding: 12px 18px;
+    font-size: 10px;
+  }
+  
+  .collection-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .load-more {
+    padding: 30px 20px 60px;
+  }
+  
+  .empty-state {
+    padding: 60px 20px;
+  }
+  
+  .quick-view-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-tabs {
+    gap: 4px;
+  }
+  
+  .filter-tab {
+    padding: 10px 14px;
+    font-size: 9px;
+  }
+  
+  .page-eyebrow::before,
+  .page-eyebrow::after {
+    width: 24px;
+  }
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Detail — UJINN.RVN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/home.css">
+<link rel="stylesheet" href="../assets/css/product.css">
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="loader-logo"><img src="../assets/images/UJINN.RVN.png" alt="UJINN.RVN" style="height:60px; filter:brightness(0) invert(1);"></div></div>
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg">Added to cart</span></div>
+
+<!-- NAV placeholder (synced from index) -->
+<nav id="mainNav"></nav>
+
+<!-- PRODUCT DETAIL -->
+<div class="product-detail">
+  <!-- GALLERY -->
+  <div class="product-gallery">
+    <div class="thumbnail-list" id="thumbnailList">
+      <!-- Thumbnails injected by JS -->
+    </div>
+    <div class="main-image" id="mainImage">
+      <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="20" y="30" width="60" height="50" rx="8" stroke="#9a9490"/>
+        <circle cx="35" cy="55" r="5" stroke="#9a9490"/>
+        <circle cx="65" cy="55" r="5" stroke="#9a9490"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="product-info">
+    <h1 class="product-title">Loading...</h1>
+    
+    <div class="rating-row">
+      <div class="stars">★★★★☆</div>
+      <span class="review-count">(150 Reviews)</span>
+      <span class="stock-status">In Stock</span>
+    </div>
+    
+    <div class="price">₦0</div>
+    
+    <p class="description">Loading product description...</p>
+    
+    <!-- COLOURS -->
+    <div class="option-group">
+      <div class="color-row" id="colorOptions">
+        <span class="option-label">Colours:</span>
+        <!-- Colors injected by JS -->
+      </div>
+    </div>
+    
+    <!-- SIZE -->
+    <div class="option-group">
+      <div class="size-row" id="sizeOptions">
+        <span class="option-label">Size:</span>
+        <div class="size-box" onclick="selectSize(this)">XS</div>
+        <div class="size-box" onclick="selectSize(this)">S</div>
+        <div class="size-box active" onclick="selectSize(this)">M</div>
+        <div class="size-box" onclick="selectSize(this)">L</div>
+        <div class="size-box" onclick="selectSize(this)">XL</div>
+      </div>
+    </div>
+    
+    <!-- ACTION ROW -->
+    <div class="action-row">
+      <div class="qty-selector">
+        <button class="qty-btn minus" onclick="changeQty(-1)">−</button>
+        <input type="text" class="qty-val" id="quantity" value="1" readonly>
+        <button class="qty-btn plus" onclick="changeQty(1)">+</button>
+      </div>
+      <button class="buy-now-btn" onclick="addToCart()">Buy Now</button>
+      <button class="favorite-btn" onclick="toggleFavorite()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- RELATED PRODUCTS -->
+<div class="related-section">
+  <div class="related-header">
+    <p class="related-label">More to Explore</p>
+    <h2 class="related-title">Related Items</h2>
+  </div>
+  <div class="product-grid" id="relatedGrid">
+    <!-- Related items injected by JS -->
+  </div>
+</div>
+
+<!-- FOOTER placeholder (synced from index) -->
+<footer id="mainFooter"></footer>
+
+<script>
+  window.addEventListener('load', () => { 
+    setTimeout(() => {
+      const loader = document.getElementById('loader');
+      if(loader) loader.classList.add('hidden');
+    }, 600); 
+  });
+</script>
+
+<script src="../assets/js/products-data.js"></script>
+<script src="../assets/js/product.js"></script>
+<script src="../assets/js/sync-header-footer.js"></script>
+</body>
+</html>

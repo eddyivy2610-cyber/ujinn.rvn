@@ -1,5 +1,5 @@
 
-import { db, auth } from "../../assets/js/firebase-config.js";
+import { db, auth } from "../../../assets/js/firebase-config.js";
 import { 
   doc, 
   getDoc, 

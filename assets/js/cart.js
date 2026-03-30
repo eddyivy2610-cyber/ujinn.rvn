@@ -175,7 +175,8 @@ window.proceedToCheckout = function() {
     showToast('Your cart is empty');
     return;
   }
-  showToast('Redirecting to checkout...');
+  localStorage.setItem('cart', JSON.stringify(cartItems));
+  window.location.href = 'checkout.html';
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -185,3 +186,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 600);
   renderCart();
 });
+

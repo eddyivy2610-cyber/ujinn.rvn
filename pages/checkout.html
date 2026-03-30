@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Order — UJINN.RVN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="../assets/css/home.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0c0b;
+            --white: #f9f7f4;
+            --warm-gray: #e8e4de;
+            --mid-gray: #9a9490;
+            --accent: #b50101;
+            --serif: 'Cormorant Garamond', serif;
+            --sans: 'DM Sans', sans-serif;
+            --whatsapp: #25D366;
+            --instagram: #E4405F;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--sans); background: var(--white); color: var(--black); line-height: 1.6; }
+
+        .checkout-main { max-width: 1100px; margin: 60px auto; padding: 0 40px; display: grid; grid-template-columns: 1fr 400px; gap: 80px; }
+
+        @media (max-width: 900px) { .checkout-main { grid-template-columns: 1fr; gap: 60px; margin: 40px auto; } }
+
+        .checkout-title { font-family: var(--serif); font-size: 48px; font-weight: 300; margin-bottom: 8px; }
+        .checkout-subtitle { font-size: 14px; color: var(--mid-gray); margin-bottom: 48px; }
+
+        /* FORM STYLES */
+        .checkout-section { margin-bottom: 48px; }
+        .section-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; color: var(--mid-gray); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+        .section-label::after { content: ''; flex: 1; height: 1px; background: var(--warm-gray); }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        .full-width { grid-column: span 2; }
+
+        input, textarea { 
+            width: 100%; 
+            padding: 16px; 
+            background: transparent; 
+            border: 1px solid var(--warm-gray); 
+            font-family: inherit; 
+            font-size: 14px; 
+            outline: none; 
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus { border-color: var(--black); }
+        textarea { min-height: 100px; resize: vertical; }
+
+        /* SUMMARY STYLES */
+        .summary-card { background: white; border: 1px solid var(--warm-gray); padding: 40px; position: sticky; top: 120px; }
+        .summary-header { font-family: var(--serif); font-size: 24px; font-weight: 400; margin-bottom: 24px; }
+        
+        .summary-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--warm-gray); font-size: 14px; }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-total { display: flex; justify-content: space-between; padding-top: 24px; margin-top: 8px; border-top: 2px solid var(--black); font-family: var(--serif); font-size: 24px; font-weight: 500; }
+
+        /* BUTTONS */
+        .checkout-actions { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 32px; }
+        
+        .order-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.2s, opacity 0.2s;
+            color: white;
+        }
+        .whatsapp-btn { background: var(--whatsapp); }
+        .instagram-btn { background: var(--instagram); }
+        .order-btn:hover { opacity: 0.95; transform: translateY(-2px); }
+
+        .order-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+        /* Loader & Toast placeholders to avoid break */
+        .loader { position: fixed; inset: 0; background: var(--white); z-index: 2000; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s, visibility 0.6s; }
+        .loader.hidden { opacity: 0; visibility: hidden; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--black); color: white; padding: 16px 24px; z-index: 3000; transform: translateY(100px); opacity: 0; transition: 0.3s; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="loader" id="loader">
+        <div class="loader-logo">
+            <div class="brand-logo-text">UJINN.RVN<small>Quality Goods</small></div>
+        </div>
+    </div>
+
+    <nav></nav> <!-- Dynamic -->
+
+    <main class="checkout-main">
+        <div class="checkout-content">
+            <h1 class="checkout-title">Finalize Order</h1>
+            <p class="checkout-subtitle">Secure your selection via direct message for personalized confirmation.</p>
+
+            <form id="checkoutForm">
+                <div class="checkout-section">
+                    <span class="section-label">Contact Details</span>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <input type="text" id="customerName" placeholder="Full Name" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <input type="tel" id="customerPhone" placeholder="Phone Number (e.g. +234...)" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkout-section">
+                    <span class="section-label">Delivery Destination</span>
+                    <div class="form-group full-width">
+                        <textarea id="customerAddress" placeholder="Full Home or Office Address for delivery" required></textarea>
+                    </div>
+                </div>
+
+                <div class="checkout-section">
+                    <span class="section-label">Special Inquiries</span>
+                    <div class="form-group full-width">
+                        <textarea id="specialNotes" placeholder="Size notes, specific delivery windows, or preferences..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <aside class="summary-card">
+            <h2 class="summary-header">Your Selection</h2>
+            <div id="orderSummary">
+                <!-- Injected via order-handler.js -->
+            </div>
+
+            <div class="checkout-actions">
+                <button type="button" class="order-btn whatsapp-btn" onclick="sendOrderViaWhatsApp()">
+                    <svg viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.52-3.67 8.2-8.2 8.2-1.55 0-3.07-.44-4.38-1.27l-.31-.2-3.12.82.84-3.04-.22-.35A8.1 8.1 0 0 1 3.79 11.9c0-4.52 3.67-8.22 8.2-8.22m-3.83 4.67c-.21 0-.45.03-.68.27-.23.23-.87.85-.87 2.08s.9 2.42 1.02 2.58c.12.16 1.78 2.71 4.3 3.8 2.52 1.09 2.52.73 2.98.69.46-.04 1.48-.61 1.69-1.19.21-.58.21-1.08.15-1.19-.06-.11-.23-.17-.48-.3s-1.48-.73-1.71-.81c-.23-.08-.4-.12-.56.12-.17.23-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.03-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.16.04-.31-.02-.43-.06-.13-.56-1.35-.78-1.85-.2-.5-.41-.42-.56-.42z"/></svg>
+                    Send to WhatsApp
+                </button>
+                <button type="button" class="order-btn instagram-btn" onclick="sendOrderViaInstagram()">
+                    <svg viewBox="0 0 24 24"><path d="M12 2c2.72 0 3.04 0 4.1.06 1.07.04 1.8.21 2.44.46.66.25 1.22.6 1.78 1.15.55.56.9 1.12 1.15 1.78.25.64.42 1.37.46 2.44.05 1.06.06 1.38.06 4.1s0 3.04-.06 4.1c-.04 1.07-.21 1.8-.46 2.44-.25.66-.6 1.22-1.15 1.78-.56.55-1.12.9-1.78 1.15-.64.25-1.37.42-2.43.46-1.07.05-1.39.06-4.1.06s-3.04 0-4.1-.06c-1.07-.04-1.8-.21-2.44-.46-.66-.25-1.22-.6-1.78-1.15-.55-.56-.9-1.12-1.15-1.78-.25-.64-.42-1.37-.46-2.44C2.01 15.04 2 14.72 2 12s0-3.04.06-4.1c.04-1.07.21-1.8.46-2.44.25-.66.6-1.22 1.15-1.78.56-.55 1.12-.9 1.78-1.15.64-.25 1.37-.42 2.44-.46C8.96 2.01 9.28 2 12 2m0 1.8c-2.67 0-2.99 0-4.04.05-.98.04-1.5.2-1.86.34-.47.18-.8.4-1.15.76-.36.35-.58.68-.76 1.15-.14.36-.3.88-.34 1.86-.05 1.05-.05 1.37-.05 4.04s0 2.99.05 4.04c.04.98.2 1.5.34 1.86.18.47.4.8.76 1.15.35.36.68.58 1.15.76.36.14.88.3 1.86.34 1.05.05 1.37.05 4.04.05s2.99 0 4.04-.05c.98-.04 1.5-.2 1.86-.34.47-.18.8-.4 1.15-.76.36-.35.58-.68.76-1.15.14-.36.3-.88.34-1.86.05-1.05.05-1.37.05-4.04s0-2.99-.05-4.04c-.04-.98-.2-1.5-.34-1.86-.18-.47-.4-.8-.76-1.15-.35-.36-.68-.58-1.15-.76-.36-.14-.88-.3-1.86-.34-1.05-.05-1.37-.05-4.04-.05M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5m0 8.2c-1.77 0-3.2-1.43-3.2-3.2 0-1.77 1.43-3.2 3.2-3.2 1.77 0 3.2 1.43 3.2 3.2 0 1.77-1.43 3.2-3.2 3.2m5.3-8.8c.64 0 1.15.51 1.15 1.15s-.51 1.15-1.15 1.15-1.15-.51-1.15-1.15.51-1.15 1.15-1.15z"/></svg>
+                    IG Direct Message
+                </button>
+            </div>
+        </aside>
+    </main>
+
+    <footer></footer> <!-- Dynamic -->
+
+    <div class="toast" id="toast">
+        <span id="toastMsg"></span>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../assets/js/order-handler.js"></script>
+    <script src="../assets/js/sync-header-footer.js"></script>
+    <script>
+        // Simple loader hide
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.classList.add('hidden');
+            }, 600);
+        });
+    </script>
+</body>
+</html>

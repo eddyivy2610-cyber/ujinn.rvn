@@ -184,5 +184,35 @@ function showToast(msg) {
   toast._timer = setTimeout(() => toast.classList.remove('show'), 2600);
 }
 
+// Product page - Buy Now button
+// Product page - Buy Now button
+function buyNow() {
+  if (!currentProduct) return;
+
+  const sizeBtn = document.querySelector('.size-box.active');
+  const size = sizeBtn ? sizeBtn.textContent.trim() : 'One Size';
+  const qty = parseInt(document.getElementById('quantity').value) || 1;
+
+  const product = {
+    id: currentProduct.id,
+    name: currentProduct.name,
+    size: size,
+    quantity: qty,
+    price: currentProduct.price,
+    image: currentProduct.image,
+    icon: currentProduct.icon
+  };
+  
+  // Clear cart and add ONLY this product for immediate checkout
+  localStorage.setItem('cart', JSON.stringify([product]));
+  
+  // Sync the cart count badge for consistency
+  localStorage.setItem('cartCount', qty);
+  window.dispatchEvent(new Event('cartUpdated'));
+
+  // Redirect to checkout
+  window.location.href = 'checkout.html';
+}
+
 // Start
 document.addEventListener('DOMContentLoaded', init);

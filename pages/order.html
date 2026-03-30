@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Handler — UJINN.RVN</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f9f7f4;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .demo-container {
+    max-width: 600px;
+    width: 100%;
+    background: white;
+    border: 1px solid #e8e4de;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    margin-bottom: 24px;
+    font-size: 28px;
+    font-weight: 400;
+  }
+  .cart-item {
+    background: #f3f1ed;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .form-group {
+    margin-bottom: 16px;
+  }
+  input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e8e4de;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .channel-buttons {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .whatsapp-btn, .instagram-btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .whatsapp-btn {
+    background: #25D366;
+    color: white;
+  }
+  .instagram-btn {
+    background: #E4405F;
+    color: white;
+  }
+  .whatsapp-btn:hover, .instagram-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+  }
+  .preview {
+    background: #f3f1ed;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: monospace;
+    margin-top: 20px;
+    white-space: pre-wrap;
+  }
+  .back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #1a3a6b;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<div class="demo-container">
+  <h2>📦 Order Inquiry Demo</h2>
+  
+  <div id="cartItems"></div>
+  
+  <div class="form-group">
+    <input type="text" id="customerName" placeholder="Full Name" value="John Doe">
+  </div>
+  <div class="form-group">
+    <input type="tel" id="customerPhone" placeholder="Phone Number (with country code)" value="+2348012345678">
+  </div>
+  <div class="form-group">
+    <textarea id="customerAddress" rows="2" placeholder="Delivery Address">12 Adeola Odeku Street, Victoria Island, Lagos</textarea>
+  </div>
+  <div class="form-group">
+    <textarea id="specialNotes" rows="2" placeholder="Special Instructions (size notes, delivery preferences, etc.)"></textarea>
+  </div>
+  
+  <div class="channel-buttons">
+    <button class="whatsapp-btn" onclick="sendOrderToWhatsApp()">
+      📱 Send via WhatsApp
+    </button>
+    <button class="instagram-btn" onclick="sendOrderToInstagram()">
+      📸 Send via Instagram DM
+    </button>
+  </div>
+  
+  <div class="preview" id="messagePreview"></div>
+  <a href="#" class="back-link" onclick="window.location.href='cart.html'">← Back to Cart</a>
+</div>
+
+<script>
+  // ============================================
+  // ORDER DATA (from cart or product page)
+  // ============================================
+  
+  // Sample cart data - in real implementation, this comes from localStorage
+  let currentCart = [
+    { id: 1, name: "Cream Knit Sweater", size: "M", quantity: 1, price: 36000 },
+    { id: 2, name: "Urban Backpack", size: null, quantity: 2, price: 42000 }
+  ];
+  
+  // Store owner details (UPDATE THESE!)
+  const STORE_CONFIG = {
+    whatsappNumber: "2348012345678",  // Without + or spaces, e.g., "2348012345678"
+    instagramUsername: "ujinn.rvn",    // Your Instagram handle
+    storeName: "UJINN.RVN",
+    storePhone: "+234 801 234 5678",
+    storeEmail: "hello@ujinn.rvn"
+  };
+  
+  // ============================================
+  // FORMAT ORDER MESSAGE
+  // ============================================
+  
+  function formatOrderMessage(customer, cart, total, notes) {
+    const date = new Date().toLocaleString();
+    
+    let message = `🛍 *NEW ORDER INQUIRY* 🛍\n\n`;
+    message += `━━━━━━━━━━━━━━━━━━━━\n`;
+    message += `📅 *Date:* ${date}\n`;
+    message += `👤 *Customer:* ${customer.name}\n`;
+    message += `📞 *Phone:* ${customer.phone}\n`;
+    message += `🏠 *Address:* ${customer.address}\n`;
+    message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+    message += `🛒 *ORDER ITEMS:*\n`;
+    
+    cart.forEach((item, index) => {
+      const sizeText = item.size ? ` (${item.size})` : '';
+      const priceFormatted = formatPrice(item.price);
+      const subtotal = item.price * item.quantity;
+      message += `${index + 1}. ${item.name}${sizeText} x${item.quantity} — ${priceFormatted} each\n`;
+      message += `   Subtotal: ${formatPrice(subtotal)}\n`;
+    });
+    
+    message += `\n━━━━━━━━━━━━━━━━━━━━\n`;
+    message += `💰 *TOTAL:* ${formatPrice(total)}\n`;
+    
+    if (notes) {
+      message += `\n📝 *SPECIAL NOTES:*\n${notes}\n`;
+    }
+    
+    message += `\n━━━━━━━━━━━━━━━━━━━━\n`;
+    message += `⏳ *Next Steps:*\n`;
+    message += `• Confirm availability\n`;
+    message += `• Calculate shipping\n`;
+    message += `• Share payment details\n`;
+    message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+    message += `_Reply to this message to confirm order._`;
+    
+    return message;
+  }
+  
+  function formatPrice(price) {
+    return '₦' + price.toLocaleString('en-NG');
+  }
+  
+  function calculateTotal(cart) {
+    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  }
+  
+  // ============================================
+  // WHATSAPP INTEGRATION
+  // ============================================
+  
+  function sendOrderToWhatsApp() {
+    // Get customer data
+    const customer = {
+      name: document.getElementById('customerName').value.trim(),
+      phone: document.getElementById('customerPhone').value.trim(),
+      address: document.getElementById('customerAddress').value.trim()
+    };
+    
+    const notes = document.getElementById('specialNotes').value.trim();
+    const total = calculateTotal(currentCart);
+    
+    // Validate required fields
+    if (!customer.name) {
+      alert('Please enter your name');
+      return;
+    }
+    if (!customer.phone) {
+      alert('Please enter your phone number');
+      return;
+    }
+    if (!customer.address) {
+      alert('Please enter your delivery address');
+      return;
+    }
+    if (currentCart.length === 0) {
+      alert('Your cart is empty');
+      return;
+    }
+    
+    // Format the message
+    const message = formatOrderMessage(customer, currentCart, total, notes);
+    
+    // Encode for URL
+    const encodedMessage = encodeURIComponent(message);
+    
+    // Create WhatsApp link
+    const whatsappUrl = `https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${encodedMessage}`;
+    
+    // Open WhatsApp in new tab
+    window.open(whatsappUrl, '_blank');
+    
+    // Save order to localStorage for reference
+    saveOrderToHistory(customer, currentCart, total, notes, 'whatsapp');
+    
+    // Show preview (optional)
+    document.getElementById('messagePreview').innerHTML = `
+      <strong>📱 WhatsApp Message Sent:</strong><br><br>
+      ${message.replace(/\n/g, '<br>')}
+    `;
+    
+    // Optional: Clear cart after order
+    // localStorage.removeItem('cart');
+  }
+  
+  // ============================================
+  // INSTAGRAM INTEGRATION
+  // ============================================
+  
+  function sendOrderToInstagram() {
+    // Get customer data
+    const customer = {
+      name: document.getElementById('customerName').value.trim(),
+      phone: document.getElementById('customerPhone').value.trim(),
+      address: document.getElementById('customerAddress').value.trim()
+    };
+    
+    const notes = document.getElementById('specialNotes').value.trim();
+    const total = calculateTotal(currentCart);
+    
+    // Validate required fields
+    if (!customer.name) {
+      alert('Please enter your name');
+      return;
+    }
+    if (!customer.address) {
+      alert('Please enter your delivery address');
+      return;
+    }
+    if (currentCart.length === 0) {
+      alert('Your cart is empty');
+      return;
+    }
+    
+    // Format message for Instagram (simpler formatting)
+    const message = formatOrderMessageForInstagram(customer, currentCart, total, notes);
+    
+    // Encode for URL
+    const encodedMessage = encodeURIComponent(message);
+    
+    // Instagram DM link (opens Instagram app or web)
+    const instagramUrl = `https://www.instagram.com/direct/inbox/?text=${encodedMessage}`;
+    
+    // Alternative: Direct to profile with pre-filled text (user still needs to paste)
+    const profileUrl = `https://www.instagram.com/${STORE_CONFIG.instagramUsername}/`;
+    
+    // Create a copy text for Instagram (since Instagram doesn't support pre-filled DMs)
+    copyToClipboard(message);
+    
+    // Show instructions
+    const confirmSend = confirm(
+      `📸 Instagram DM Instructions:\n\n` +
+      `1. Click OK to open Instagram\n` +
+      `2. Go to @${STORE_CONFIG.instagramUsername}\n` +
+      `3. Tap "Message"\n` +
+      `4. Paste the order details (already copied to clipboard)\n` +
+      `5. Send!\n\n` +
+      `Order details have been copied to your clipboard.`
+    );
+    
+    if (confirmSend) {
+      window.open(profileUrl, '_blank');
+    }
+    
+    // Save order to history
+    saveOrderToHistory(customer, currentCart, total, notes, 'instagram');
+    
+    // Show preview
+    document.getElementById('messagePreview').innerHTML = `
+      <strong>📸 Instagram Message (Copied to Clipboard):</strong><br><br>
+      ${message.replace(/\n/g, '<br>')}
+    `;
+  }
+  
+  function formatOrderMessageForInstagram(customer, cart, total, notes) {
+    const date = new Date().toLocaleString();
+    
+    let message = `🛍 NEW ORDER INQUIRY 🛍\n\n`;
+    message += `Date: ${date}\n`;
+    message += `Customer: ${customer.name}\n`;
+    message += `Phone: ${customer.phone}\n`;
+    message += `Address: ${customer.address}\n\n`;
+    message += `ORDER ITEMS:\n`;
+    
+    cart.forEach((item, index) => {
+      const sizeText = item.size ? ` (${item.size})` : '';
+      const priceFormatted = formatPrice(item.price);
+      message += `${index + 1}. ${item.name}${sizeText} x${item.quantity} — ${priceFormatted}\n`;
+    });
+    
+    message += `\nTOTAL: ${formatPrice(total)}\n`;
+    
+    if (notes) {
+      message += `\nNotes: ${notes}\n`;
+    }
+    
+    message += `\nPlease confirm availability.`;
+    
+    return message;
+  }
+  
+  // ============================================
+  // COPY TO CLIPBOARD HELPER
+  // ============================================
+  
+  function copyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  }
+  
+  // ============================================
+  // SAVE ORDER HISTORY (optional)
+  // ============================================
+  
+  function saveOrderToHistory(customer, cart, total, notes, channel) {
+    const order = {
+      id: 'ORD-' + Date.now(),
+      date: new Date().toISOString(),
+      customer: { ...customer },
+      items: cart.map(item => ({ ...item })),
+      total: total,
+      notes: notes,
+      channel: channel,
+      status: 'pending'
+    };
+    
+    // Get existing orders
+    let orders = JSON.parse(localStorage.getItem('adminOrders') || '[]');
+    orders.unshift(order); // Add to beginning
+    localStorage.setItem('adminOrders', JSON.stringify(orders));
+    
+    console.log('Order saved:', order);
+  }
+  
+  // ============================================
+  // RENDER CART ITEMS (demo)
+  // ============================================
+  
+  function renderCartItems() {
+    const container = document.getElementById('cartItems');
+    if (!container) return;
+    
+    if (currentCart.length === 0) {
+      container.innerHTML = '<p style="color:#9a9490;">Your cart is empty</p>';
+      return;
+    }
+    
+    container.innerHTML = `
+      <div style="margin-bottom: 16px; font-weight: 500;">🛒 Items in Cart:</div>
+      ${currentCart.map(item => `
+        <div class="cart-item">
+          <span>${item.name} ${item.size ? `(${item.size})` : ''} x${item.quantity}</span>
+          <span style="font-weight: 600;">${formatPrice(item.price * item.quantity)}</span>
+        </div>
+      `).join('')}
+      <div class="cart-item" style="background: #e8e4de; margin-top: 8px;">
+        <strong>Total:</strong>
+        <strong>${formatPrice(calculateTotal(currentCart))}</strong>
+      </div>
+    `;
+  }
+  
+  // ============================================
+  // LOAD CART FROM LOCALSTORAGE
+  // ============================================
+  
+  function loadCartFromStorage() {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        currentCart = JSON.parse(savedCart);
+      } catch(e) {
+        console.error('Failed to load cart');
+      }
+    }
+    renderCartItems();
+    
+    // Update message preview
+    updateMessagePreview();
+  }
+  
+  function updateMessagePreview() {
+    const customer = {
+      name: document.getElementById('customerName')?.value || 'John Doe',
+      phone: document.getElementById('customerPhone')?.value || '+2348012345678',
+      address: document.getElementById('customerAddress')?.value || '12 Adeola Odeku Street, Lagos'
+    };
+    const notes = document.getElementById('specialNotes')?.value || '';
+    const total = calculateTotal(currentCart);
+    const preview = formatOrderMessage(customer, currentCart, total, notes);
+    const previewDiv = document.getElementById('messagePreview');
+    if (previewDiv) {
+      previewDiv.innerHTML = `<strong>📋 Message Preview:</strong><br><br>${preview.replace(/\n/g, '<br>')}`;
+    }
+  }
+  
+  // ============================================
+  // EVENT LISTENERS
+  // ============================================
+  
+  // Update preview when form changes
+  function attachFormListeners() {
+    const fields = ['customerName', 'customerPhone', 'customerAddress', 'specialNotes'];
+    fields.forEach(field => {
+      const el = document.getElementById(field);
+      if (el) {
+        el.addEventListener('input', () => updateMessagePreview());
+      }
+    });
+  }
+  
+  // Initialize
+  loadCartFromStorage();
+  attachFormListeners();
+</script>
+</body>
+</html>

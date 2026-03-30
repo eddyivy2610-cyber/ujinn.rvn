@@ -12,7 +12,11 @@
 </head>
 <body>
 
-<div class="loader" id="loader"><div class="loader-logo"><img src="../assets/images/UJINN.RVN.png" alt="UJINN.RVN" style="height:60px; filter:brightness(0) invert(1);"></div></div>
+<div class="loader" id="loader">
+  <div class="loader-logo">
+    <div class="brand-logo-text">UJINN.RVN<small>Quality Goods</small></div>
+  </div>
+</div>
 <div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg">Added to cart</span></div>
 
 <!-- NAV placeholder (synced from index) -->
@@ -75,7 +79,8 @@
         <input type="text" class="qty-val" id="quantity" value="1" readonly>
         <button class="qty-btn plus" onclick="changeQty(1)">+</button>
       </div>
-      <button class="buy-now-btn" onclick="addToCart()">Buy Now</button>
+      <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+      <button class="buy-now-btn" onclick="buyNow()">Buy Now</button>
       <button class="favorite-btn" onclick="toggleFavorite()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       </button>

@@ -10,8 +10,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
+// CLOUDINARY CONFIGURATION
+const CLOUDINARY_CLOUD_NAME = "ddscfcopu"; 
+const CLOUDINARY_UPLOAD_PRESET = "ujinn123";
+
 let editingId = new URLSearchParams(window.location.search).get('id');
-let uploadedImages = [];
+let uploadedImages = []; 
 
 // AUTH GUARD
 onAuthStateChanged(auth, (user) => {
@@ -32,7 +36,7 @@ async function loadProductData() {
     if (docSnap.exists()) {
       const p = docSnap.data();
       document.getElementById('editorTitle').textContent = 'Refine Piece';
-      document.getElementById('editorSubtitle').textContent = `Editing Firestore ID: ${editingId}`;
+      document.getElementById('editorSubtitle').textContent = `Editing Collection Item`;
       document.getElementById('name').value = p.name || '';
       document.getElementById('category').value = p.category || 'tops';
       document.getElementById('price').value = p.price || 0;
@@ -41,35 +45,55 @@ async function loadProductData() {
       document.getElementById('desc').value = p.description || '';
       uploadedImages = p.images || [];
       renderImages();
-    } else {
-      showToast("Product not found", "error");
-      setTimeout(() => window.location.href = 'dashboard.html', 2000);
     }
   } catch (err) {
     console.error("Error loading product:", err);
-    showToast("Failed to load product data", "error");
   }
+}
+
+async function uploadToCloudinary(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+    method: "POST",
+    body: formData
+  });
+  
+  if (!res.ok) throw new Error('Upload failed');
+  const data = await res.json();
+  return data.secure_url;
 }
 
 window.triggerUpload = function() {
   document.getElementById('fileInput').click();
 };
 
-window.handleFileUpload = function(e) {
+window.handleFileUpload = async function(e) {
   const files = Array.from(e.target.files);
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      uploadedImages.push(ev.target.result);
+  const statusEl = document.getElementById('editorSubtitle');
+  const originalText = statusEl.textContent;
+
+  for (const file of files) {
+    try {
+      statusEl.textContent = "Processing image...";
+      const url = await uploadToCloudinary(file);
+      uploadedImages.push(url);
       renderImages();
-    };
-    reader.readAsDataURL(file);
-  });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload one or more images. Check Cloudinary config.");
+    }
+  }
+  statusEl.textContent = originalText;
 };
 
 window.renderImages = function() {
   const grid = document.getElementById('imageGrid');
   const addBox = grid.querySelector('.upload-box');
+  if (!grid || !addBox) return;
+
   grid.innerHTML = '';
   grid.appendChild(addBox);
 
@@ -93,6 +117,11 @@ window.handleLogout = function() {
 document.getElementById('editorForm').onsubmit = async function(e) {
   e.preventDefault();
   
+  if (CLOUDINARY_CLOUD_NAME === "your_cloud_name") {
+      alert("Please enter your Cloudinary Cloud Name in the JS file.");
+      return;
+  }
+
   const pData = {
     name: document.getElementById('name').value,
     category: document.getElementById('category').value,
@@ -107,29 +136,13 @@ document.getElementById('editorForm').onsubmit = async function(e) {
   try {
     if (editingId) {
       await setDoc(doc(db, "products", editingId), pData, { merge: true });
-      showToast("Inventory protected & updated.");
     } else {
       pData.createdAt = serverTimestamp();
       await addDoc(collection(db, "products"), pData);
-      showToast("New masterpiece added to collection.");
     }
-    
-    setTimeout(() => window.location.href = 'dashboard.html', 1500);
+    window.location.href = 'dashboard.html';
   } catch (err) {
     console.error("Error saving product:", err);
-    showToast("Failed to save changes", "error");
+    alert("Failed to save product.");
   }
 };
-
-function showToast(message, type = 'success') {
-  let toast = document.getElementById('adminToast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'adminToast';
-    toast.className = 'toast show';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = message;
-  toast.className = `toast show ${type}`;
-  setTimeout(() => toast.classList.remove('show'), 3000);
-}

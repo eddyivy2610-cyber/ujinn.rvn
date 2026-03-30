@@ -18,11 +18,7 @@ async function initHome() {
     renderProducts('all');
   } catch (err) {
     console.error("Error fetching products:", err);
-    // Fallback to static data if available or show error
-    if (window.productsData) {
-      allProducts = window.productsData;
-      renderProducts('all');
-    }
+    grid.innerHTML = '<div style="grid-column: 1/-1; padding: 60px; text-align: center; color: var(--error);">Error synchronizing catalog. Please refresh.</div>';
   }
 }
 

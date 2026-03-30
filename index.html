@@ -164,6 +164,14 @@
     </div>
   </footer>
 
+  <script>
+    window.addEventListener('load', () => { 
+      setTimeout(() => {
+        const loader = document.getElementById('loader');
+        if (loader) loader.classList.add('hidden');
+      }, 800); 
+    });
+  </script>
   <script type="module" src="assets/js/home-firebase.js"></script>
   <script src="assets/js/sync-header-footer.js"></script>
 </body>

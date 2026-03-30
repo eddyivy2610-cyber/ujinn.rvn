@@ -58,5 +58,23 @@ window.filterProducts = function(btn, cat) {
   renderProducts(cat);
 };
 
+window.addToCart = function(name) {
+  const cartBadge = document.getElementById('cartCount');
+  if (cartBadge) {
+    let count = parseInt(cartBadge.textContent) || 0;
+    cartBadge.textContent = count + 1;
+  }
+  showToast(`"${name}" added to cart`);
+};
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  const msgEl = document.getElementById('toastMsg');
+  if (msgEl) msgEl.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', initHome);

@@ -64,25 +64,6 @@
   <a href="../index.html" class="back-to-site">Return to Storefront</a>
 </div>
 
-<script src="assets/js/admin.js"></script>
-<script>
-  function handleLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('email').value;
-    const pass = document.getElementById('password').value;
-
-    if (email === 'admin@ujinn.rvn' && pass === 'admin123') {
-      sessionStorage.setItem('adminLoggedIn', 'true');
-      window.location.href = 'pages/dashboard.html';
-    } else {
-      alert('Invalid credentials.');
-    }
-  }
-
-  // Pre-check if already logged in
-  if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-      window.location.href = 'pages/dashboard.html';
-  }
-</script>
+<script type="module" src="assets/js/login-firebase.js"></script>
 </body>
 </html>

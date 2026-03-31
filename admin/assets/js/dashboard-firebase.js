@@ -124,7 +124,8 @@ function updateStats(products) {
   const lowStock = products.filter(p => (Number(p.stock) || 0) < 5).length;
 
   document.getElementById('statTotal').textContent = products.length;
-  document.getElementById('statValue').textContent = '₦' + (totalValue / 1000000).toFixed(1) + 'M';
+  const valueInMillions = totalValue / 1000000;
+  document.getElementById('statValue').textContent = '₦' + valueInMillions.toFixed(2) + 'M';
   document.getElementById('statLow').textContent = lowStock;
 }
 

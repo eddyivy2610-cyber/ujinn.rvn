@@ -92,6 +92,18 @@ window.handleFileUpload = async function(e) {
       statusEl.textContent = "Processing image...";
       const url = await uploadToCloudinary(file);
       uploadedImages.push(url);
+      
+      // Auto-suggest color if first image and colors input is empty
+      const colorsInput = document.getElementById('colors');
+      if (uploadedImages.length === 1 && !colorsInput.value.trim()) {
+        try {
+          const sampledColor = await extractDominantColor(url);
+          if (sampledColor) colorsInput.value = sampledColor;
+        } catch (colorErr) {
+          console.warn("Color sampling bypassed:", colorErr);
+        }
+      }
+      
       renderImages();
     } catch (err) {
       console.error(err);

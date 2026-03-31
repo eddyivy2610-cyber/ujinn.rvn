@@ -65,14 +65,14 @@
 <body>
 <div class="loader" id="loader"><div class="loader-inner"></div></div>
 
-<header class="admin-header" style="position:sticky;top:0;z-index:100;background:rgba(249,247,244,0.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--warm-gray);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:70px;">
-  <div style="display:flex;align-items:center;gap:40px;">
+<header class="admin-header">
+  <div class="header-nav-wrap">
     <div class="admin-logo">
       <a href="dashboard.html">UJINN•RVN<small>Inventory</small></a>
     </div>
-    <nav style="display:flex;gap:28px;">
-      <a href="dashboard.html" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--black);text-decoration:none;font-weight:600;border-bottom:1px solid var(--black);padding-bottom:2px;">Inventory</a>
-      <a href="subscribers.html" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid-gray);text-decoration:none;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='#0d0c0b'" onmouseout="this.style.color='#9a9490'">Subscribers</a>
+    <nav class="header-nav">
+      <a href="dashboard.html" class="active">Inventory</a>
+      <a href="subscribers.html">Subscribers</a>
     </nav>
   </div>
   <div class="admin-actions">

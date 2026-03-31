@@ -82,7 +82,7 @@ function renderProducts(products) {
 
   tbody.innerHTML = paginatedProducts.map(p => `
     <tr data-id="${p.id}">
-      <td data-label="Expand" class="mobile-expand">
+      <td data-label="Expand" class="mobile-expand" onclick="toggleExpand(this)">
         <div class="expand-icon">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
@@ -168,6 +168,11 @@ window.confirmDelete = function(id, name) {
         showToast("Failed to delete piece", "error");
       });
   }
+};
+
+window.toggleExpand = function(element) {
+  const tr = element.closest('tr');
+  if (tr) tr.classList.toggle('is-expanded');
 };
 
 window.adminLogout = function() {

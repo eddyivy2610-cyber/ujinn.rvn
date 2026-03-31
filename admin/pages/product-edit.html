@@ -38,8 +38,10 @@
 <div class="loader" id="loader"><div class="loader-inner"></div></div>
 
 <header class="admin-header">
-  <div class="admin-logo">
-    <a href="dashboard.html">UJINN.RVN<small>Inventory</small></a>
+  <div class="header-nav-wrap">
+    <div class="admin-logo">
+      <a href="dashboard.html">UJINN•RVN<small>Inventory</small></a>
+    </div>
   </div>
   <div class="admin-actions">
     <button class="logout-btn" onclick="handleLogout()">Logout</button>
@@ -112,10 +114,10 @@
         <h2 class="section-title">Visual Assets</h2>
         <p class="form-label">Primary Product Images</p>
         <div class="image-upload-wrap" id="imageGrid">
-            <div class="upload-box" onclick="triggerUpload()">
+            <label class="upload-box" for="fileInput">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                <input type="file" id="fileInput" hidden accept="image/*" multiple onchange="handleFileUpload(event)">
-            </div>
+                <input type="file" id="fileInput" hidden accept="image/jpeg, image/png, image/webp" multiple="multiple" onchange="handleFileUpload(event)">
+            </label>
         </div>
     </section>
 

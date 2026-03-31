@@ -52,6 +52,11 @@ body {
     color: var(--accent);
     margin-left: 6px;
 }
+.header-nav-wrap { display: flex; align-items: center; gap: 40px; }
+.header-nav { display: flex; gap: 28px; }
+.header-nav a { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; font-weight: 500; color: var(--mid-gray); transition: 0.2s; padding-bottom: 2px; border-bottom: 1px solid transparent; }
+.header-nav a:hover, .header-nav a.active { color: var(--black); font-weight: 600; border-bottom-color: var(--black); }
+
 .logout-btn {
     background: none;
     border: 1px solid var(--warm-gray);
@@ -176,9 +181,14 @@ body {
 
 /* MOBILE DASHBOARD */
 @media (max-width: 768px) {
+    .admin-header { height: auto; padding: 16px 20px; flex-wrap: wrap; }
+    .header-nav-wrap { flex-wrap: wrap; width: 100%; gap: 16px 0; }
+    .header-nav { width: 100%; padding-top: 12px; border-top: 1px solid var(--warm-gray); justify-content: flex-start; gap: 24px; }
+    .admin-actions { position: absolute; top: 16px; right: 20px; }
+
     .page-header { flex-direction: column; align-items: stretch; gap: 20px; }
     .btn-primary { width: 100%; justify-content: center; border-radius: 50px; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .stats-grid { grid-template-columns: 1fr; gap: 16px; }
     .stat-card { padding: 20px; }
     .stat-value { font-size: 28px; }
 

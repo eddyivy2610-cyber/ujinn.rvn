@@ -201,20 +201,24 @@ nav.scrolled {
   align-items: center;
 }
 
-.cart-badge span {
-  position: absolute;
-  top: -5px;
-  right: -6px;
+.cart-count {
   background: var(--accent);
   color: white;
   font-size: 9px;
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
+  font-family: var(--sans);
+}
+
+.cart-badge .cart-count {
+  position: absolute;
+  top: -5px;
+  right: -6px;
 }
 
 /* HERO */

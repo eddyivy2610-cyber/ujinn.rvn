@@ -1,7 +1,56 @@
 /**
  * sync-header-footer.js
- * Dynamically imports the navigation and footer from index.html to maintain consistency.
+ * Comprehensive navigation, footer, and cart synchronization for UJINN.RVN
  */
+
+// ============================================
+// Global Cart Helpers (Available on all pages)
+// ============================================
+
+window.updateNavCartCount = function() {
+    const count = localStorage.getItem('cartCount') || '0';
+    const counts = document.querySelectorAll('.cart-count');
+    counts.forEach(el => {
+        el.textContent = count;
+        el.style.display = (count === '0') ? 'none' : 'flex';
+    });
+};
+
+window.addToCartSimple = function(productId, name, price, image) {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const product = {
+        id: productId,
+        name: name,
+        price: price,
+        image: image || '',
+        quantity: 1,
+        size: 'M' // Default for quick add
+    };
+    
+    const existingIndex = cart.findIndex(item => item.id === product.id && item.size === product.size);
+    if (existingIndex > -1) {
+        cart[existingIndex].quantity += 1;
+    } else {
+        cart.push(product);
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('cartCount', cart.reduce((s, i) => s + i.quantity, 0));
+    
+    // Broadcast for all components
+    window.dispatchEvent(new Event('cartUpdated'));
+    
+    if (window.showToast) {
+        window.showToast(`"${name}" added to cart`);
+    } else {
+        alert(`"${name}" added to cart`);
+    }
+};
+
+window.addEventListener('cartUpdated', window.updateNavCartCount);
+window.addEventListener('storage', (e) => {
+    if (e.key === 'cart' || e.key === 'cartCount') window.updateNavCartCount();
+});
 
 async function syncHeaderFooter() {
   const lowerPath = window.location.pathname.toLowerCase();
@@ -72,6 +121,7 @@ async function syncHeaderFooter() {
     console.log('Header, Footer, and Menu synced');
 
     document.dispatchEvent(new CustomEvent('headerFooterSynced'));
+    window.updateNavCartCount();
 
   } catch (error) {
     console.error('Failed to sync header/footer/menu:', error);

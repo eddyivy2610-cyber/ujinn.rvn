@@ -78,7 +78,7 @@ async function renderRelatedItems() {
           <div class="product-img-placeholder">
             ${p.images && p.images[0] ? `<img src="${p.images[0]}" alt="${p.name}" loading="lazy">` : `<div style="opacity:0.2;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.62 1.97v4.42a2 2 0 0 0 .76 1.58L7 14.3v6.3a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6.3l4.24-2.87a2 2 0 0 0 .76-1.58V5.43a2 2 0 0 0-1.62-1.97z"/></svg></div>`}
           </div>
-          <div class="quick-add" onclick="event.stopPropagation(); window.addToCartSimple('${p.name}')">+ Add to Cart</div>
+          <div class="quick-add" onclick="event.stopPropagation(); window.addToCartSimple('${p.id}', '${p.name}', ${p.price}, '${p.images?.[0] || ''}')">+ Add to Cart</div>
         </div>
         <div class="product-info">
           <div class="product-name">${p.name}</div>
@@ -102,13 +102,43 @@ window.changeImage = function(src, thumb) {
   }
 };
 
-window.addToCartSimple = function(name) {
-  window.showToast(`"${name}" added to cart`);
-};
-
 window.changeQty = function(n) {
   currentQty = Math.max(1, currentQty + n);
-  document.getElementById('quantity').value = currentQty;
+  const qtyInput = document.getElementById('qtyValue');
+  if (qtyInput) qtyInput.value = currentQty;
+};
+
+// Size selection logic
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('size-box')) {
+    document.querySelectorAll('.size-box').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+  }
+});
+
+window.addToCartSimple = function(productId, name, price, image) {
+  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  const product = {
+    id: productId,
+    name: name,
+    price: price,
+    image: image || '',
+    quantity: 1,
+    size: 'M' // Default for quick add
+  };
+  
+  const existingIndex = cart.findIndex(item => item.id === product.id && item.size === product.size);
+  if (existingIndex > -1) {
+    cart[existingIndex].quantity += 1;
+  } else {
+    cart.push(product);
+  }
+  
+  localStorage.setItem('cart', JSON.stringify(cart));
+  localStorage.setItem('cartCount', cart.reduce((s, i) => s + i.quantity, 0));
+  window.dispatchEvent(new Event('cartUpdated'));
+  
+  window.showToast(`"${name}" added to cart`);
 };
 
 window.addToCart = function() {

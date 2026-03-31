@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usage Policy — UJINN.RVN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/home.css">
+<style>
+  .policy-container {
+    max-width: 800px;
+    margin: 80px auto;
+    padding: 0 24px;
+    line-height: 1.8;
+  }
+  .policy-header {
+    margin-bottom: 60px;
+    text-align: center;
+  }
+  .policy-title {
+    font-family: var(--serif);
+    font-size: 48px;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+  .policy-date {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid-gray);
+  }
+  .policy-content h2 {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 400;
+    margin: 48px 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--warm-gray);
+  }
+  .policy-content p {
+    margin-bottom: 24px;
+    color: var(--text);
+    font-size: 15px;
+  }
+  .policy-content ul {
+    margin-bottom: 24px;
+    padding-left: 20px;
+  }
+  .policy-content li {
+    margin-bottom: 12px;
+    font-size: 15px;
+  }
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="loader-inner"></div></div>
+
+<nav id="mainNav"></nav>
+
+<article class="policy-container reveal">
+  <header class="policy-header">
+    <h1 class="policy-title">Usage Policy</h1>
+    <p class="policy-date">Last updated: March 31, 2026</p>
+  </header>
+
+  <div class="policy-content">
+    <p>This Privacy Policy describes how <strong>UJINN.RVN</strong> (the "Site", "we", "us", or "our") collects, uses, and discloses your personal information when you visit, use our services, or make a purchase from our platform or otherwise communicate with us regarding the Site (collectively, the "Services").</p>
+
+    <h2>Changes to This Privacy Policy</h2>
+    <p>We may update this Privacy Policy from time to time, including to reflect changes to our practices or for other operational, legal, or regulatory reasons. We will post the revised Privacy Policy on the Site, update the "Last updated" date and take any other steps required by applicable law.</p>
+
+    <h2>How We Collect and Use Your Personal Information</h2>
+    <p>To provide the Services, we collect and have collected over the past 12 months personal information about you from a variety of sources, as set out below. The information that we collect and use varies depending on how you interact with us.</p>
+
+    <h2>Information We Collect Directly from You</h2>
+    <ul>
+      <li><strong>Contact details:</strong> Name, address, phone number, and email.</li>
+      <li><strong>Order information:</strong> Name, billing address, shipping address, payment confirmation, and phone number.</li>
+      <li><strong>Customer support:</strong> Information you choose to include in communications with us.</li>
+    </ul>
+
+    <h2>How We Use Your Personal Information</h2>
+    <ul>
+      <li><strong>Providing Products and Services:</strong> To process payments, fulfill orders, and manage your account.</li>
+      <li><strong>Marketing and Advertising:</strong> To send promotional communications and show you advertisements for products or services.</li>
+      <li><strong>Security and Fraud Prevention:</strong> To detect, investigate or take action regarding possible fraudulent or illegal activity.</li>
+    </ul>
+
+    <h2>How We Disclose Personal Information</h2>
+    <p>In certain circumstances, we may disclose your personal information to third parties for contract fulfillment purposes and legitimate business interests. Such circumstances include vendors who perform services on our behalf (IT management, data analytics, cloud storage, fulfillment and shipping).</p>
+
+    <h2>Security and Retention</h2>
+    <p>Please be aware that no security measures are perfect or impenetrable. How long we retain your personal information depends on different factors, such as whether we need the information to maintain your account or comply with legal obligations.</p>
+
+    <h2>Contact</h2>
+    <p>Should you have any questions about our privacy practices or this Privacy Policy, or if you would like to exercise any of the rights available to you, please email us at <strong>[EMAIL_ADDRESS]</strong> or contact us at ADDRESS</p>
+  </div>
+</article>
+
+<footer id="mainFooter"></footer>
+
+<script src="../assets/js/sync-header-footer.js"></script>
+<script>
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const loader = document.getElementById('loader');
+      if (loader) loader.classList.add('hidden');
+    }, 600);
+    
+    // Add reveal observer
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  });
+</script>
+</body>
+</html>

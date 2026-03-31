@@ -5,10 +5,10 @@
  */
 
 const STORE_CONFIG = {
-  whatsappNumber: "2348012345678",  // Replace with real number (no +, no spaces)
-  instagramUsername: "ujinn.rvn",    // Replace with real IG handle
+  whatsappNumber: "2348147396890", 
+  instagramUsername: "ujinn.rvn",
   storeName: "UJINN.RVN",
-  checkoutSuccessPath: "collection.html" // Where to go after ordering
+  checkoutSuccessPath: "collection.html"
 };
 
 // ============================================

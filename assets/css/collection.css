@@ -241,12 +241,10 @@
 }
 
 /* ===== RESPONSIVE OVERRIDES ===== */
-/* Collection page specific responsive adjustments */
 @media (max-width: 1024px) {
   .collection-header {
     margin: 0 20px 24px;
   }
-  
   .filter-tabs {
     margin: 0 20px 36px;
   }
@@ -256,50 +254,28 @@
   .page-header {
     padding: 60px 20px 40px;
   }
-  
   .page-title {
     font-size: clamp(36px, 8vw, 48px);
   }
-  
   .page-desc {
     font-size: 13px;
     line-height: 1.7;
   }
-  
+  .filter-tabs {
+    justify-content: center;
+    margin-bottom: 40px;
+    gap: 12px;
+  }
   .filter-tab {
-    padding: 12px 18px;
-    font-size: 10px;
-  }
-  
-  .collection-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .load-more {
-    padding: 30px 20px 60px;
-  }
-  
-  .empty-state {
-    padding: 60px 20px;
-  }
-  
-  .quick-view-modal {
-    width: 95%;
-    max-height: 90vh;
+    padding: 10px 14px;
+    font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
   .filter-tabs {
-    gap: 4px;
+    gap: 8px;
   }
-  
-  .filter-tab {
-    padding: 10px 14px;
-    font-size: 9px;
-  }
-  
   .page-eyebrow::before,
   .page-eyebrow::after {
     width: 24px;

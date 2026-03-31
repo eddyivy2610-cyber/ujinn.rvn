@@ -120,16 +120,23 @@ window.addToCart = function() {
 window.buyNow = function() {
   if (!currentProduct) return;
   const size = document.querySelector('.size-box.active')?.textContent || 'M';
-  const product = {
-    id: currentProduct.id,
-    name: currentProduct.name,
-    price: currentProduct.price,
-    image: currentProduct.images?.[0] || '',
-    quantity: currentQty,
-    size: size
-  };
-  localStorage.setItem('cart', JSON.stringify([product]));
-  window.location.href = 'checkout.html';
+  const qty = currentQty;
+  const total = currentProduct.price * qty;
+  const phone = "2348147396890";
+  
+  const message = `Hello UJINN.RVN, I would like to place an order:
+  
+Item: ${currentProduct.name}
+Size: ${size}
+Quantity: ${qty}
+Total: ₦${total.toLocaleString()}
+
+Is this piece available for delivery?`;
+
+  const encodedMsg = encodeURIComponent(message);
+  const waLink = `https://wa.me/${phone}?text=${encodedMsg}`;
+  
+  window.open(waLink, '_blank');
 };
 
 window.showToast = function(msg) {

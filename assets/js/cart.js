@@ -1,189 +1,166 @@
 /**
  * cart.js
- * Logic for the shopping cart page.
+ * Comprehensive cart management for UJINN.RVN
+ * Pulls live data from localStorage and synchronizes with navigation.
  */
 
-// Cart Items State (In a real app, this would be from localStorage or an API)
-let cartItems = [
-  {
-    id: 1,
-    name: "Cream Knit Sweater",
-    price: 36000,
-    quantity: 1,
-    variant: "Cream, M",
-    icon: "shirt",
-    image: 'https://images.unsplash.com/photo-1576809948016-35e330ad0e9b?auto=format&fit=crop&q=80&w=800'
-  },
-  {
-    id: 11,
-    name: "Urban Backpack",
-    price: 42000,
-    quantity: 1,
-    variant: "Tan",
-    icon: "bag",
-    image: 'https://images.unsplash.com/photo-1553062407-98eeb94c6a62?auto=format&fit=crop&q=80&w=800'
-  }
-];
+let cartItems = [];
 
-// Helper functions (using formatPrice from productsData if available)
-function calculateSubtotal() {
-  return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-}
+// ============================================
+// Data Management
+// ============================================
 
-function updateCartCount() {
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const cartCountSpan = document.querySelector('#cartCount');
-  if (cartCountSpan) cartCountSpan.textContent = totalItems;
-  // localStorage.setItem('cartCount', totalItems);
-}
-
-function showToast(message) {
-  const toast = document.getElementById('toast');
-  const toastMsg = document.getElementById('toastMsg');
-  if (toastMsg) toastMsg.textContent = message;
-  if (toast) {
-    toast.classList.add('show');
-    clearTimeout(toast._timer);
-    toast._timer = setTimeout(() => toast.classList.remove('show'), 2600);
+function loadCart() {
+  try {
+    const savedCart = localStorage.getItem('cart');
+    cartItems = savedCart ? JSON.parse(savedCart) : [];
+  } catch (e) {
+    console.error('Cart load error:', e);
+    cartItems = [];
   }
 }
 
-// Render Cart
+function saveCart() {
+  localStorage.setItem('cart', JSON.stringify(cartItems));
+  
+  // Sync total count for nav
+  const totalCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  localStorage.setItem('cartCount', totalCount);
+  
+  // Notify other components (nav)
+  window.dispatchEvent(new Event('cartUpdated'));
+}
+
+function formatPrice(price) {
+  return '₦' + Number(price).toLocaleString('en-NG');
+}
+
+// ============================================
+// UI Rendering
+// ============================================
+
 function renderCart() {
   const container = document.getElementById('cartContent');
   if (!container) return;
   
   if (cartItems.length === 0) {
     container.innerHTML = `
-      <div class="empty-cart">
-        <div class="empty-cart-icon">🛒</div>
-        <h2 class="empty-cart-title">Your cart is empty</h2>
-        <p class="empty-cart-desc">Looks like you haven't added anything to your cart yet.</p>
-        <a href="collection.html" class="shop-now-btn">Shop Now</a>
+      <div class="empty-cart" style="text-align:center; padding: 100px 20px;">
+        <div style="margin-bottom: 24px; opacity: 0.15;">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </div>
+        <h2 style="font-family: var(--serif); font-size: 32px; margin-bottom: 12px; font-weight: 300;">Your Archive is Empty</h2>
+        <p style="color: var(--mid-gray); margin-bottom: 32px;">Discover our latest collection to add refined pieces to your cart.</p>
+        <a href="collection.html" class="btn-primary" style="display:inline-flex; text-decoration:none;">Explore Collection</a>
       </div>
     `;
-    updateCartCount();
     return;
   }
 
-  const subtotal = calculateSubtotal();
-  const shipping = 0; // Free shipping
-  const total = subtotal + shipping;
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const total = subtotal; // Assuming free shipping for now
 
   container.innerHTML = `
     <div class="cart-layout">
       <div class="cart-items-section">
-        <table class="cart-table">
-          <thead>
+        <table class="cart-table" style="width:100%; border-collapse: collapse; margin-bottom: 40px;">
+          <thead style="text-align:left; border-bottom: 1px solid var(--warm-gray);">
             <tr>
-              <th>Product</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th>Subtotal</th>
+              <th style="padding: 16px 0; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid-gray);">Product</th>
+              <th style="padding: 16px 0; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid-gray);">Price</th>
+              <th style="padding: 16px 0; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid-gray);">Quantity</th>
+              <th style="padding: 16px 0; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid-gray);">Subtotal</th>
             </tr>
           </thead>
           <tbody>
             ${cartItems.map((item, index) => `
-              <tr data-id="${item.id}" data-index="${index}">
-                <td>
-                  <div class="product-cell">
-                    <div class="product-thumb">
-                      ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover;">` : getIcon(item.icon)}
+              <tr style="border-bottom: 1px solid var(--warm-gray);">
+                <td style="padding: 24px 0;">
+                  <div class="product-cell" style="display:flex; gap: 20px; align-items:center;">
+                    <div class="product-thumb" style="width: 80px; height: 100px; background: #eee; flex-shrink:0;">
+                      ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover;">` : '👕'}
                     </div>
                     <div class="product-details">
-                      <a href="product.html?id=${item.id}" class="product-name">${item.name}</a>
-                      <span class="product-variant">${item.variant}</span>
-                      <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
+                      <h4 style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">${item.name}</h4>
+                      <p style="font-size: 12px; color: var(--mid-gray); margin-bottom: 12px;">Size: ${item.size}</p>
+                      <button class="remove-btn" onclick="removeFromCart(${index})" style="background:none; border:none; border-bottom: 1px solid #ccc; font-size: 11px; padding:0; cursor:pointer; color: var(--mid-gray);">Remove Item</button>
                     </div>
                   </div>
                 </td>
-                <td class="price-cell">${typeof formatPrice === 'function' ? formatPrice(item.price) : '₦' + item.price.toLocaleString()}</td>
-                <td>
-                  <div class="quantity-selector">
-                    <button class="qty-btn" onclick="updateQuantity(${index}, -1)">−</button>
-                    <input type="text" class="quantity-input" value="${item.quantity}" readonly>
-                    <button class="qty-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                <td style="padding: 24px 0; font-size: 14px;">${formatPrice(item.price)}</td>
+                <td style="padding: 24px 0;">
+                  <div class="quantity-selector" style="display:flex; align-items:center; border: 1px solid var(--warm-gray); width: fit-content; padding: 4px;">
+                    <button onclick="updateQuantity(${index}, -1)" style="border:none; background:none; padding: 8px 12px; cursor:pointer;">−</button>
+                    <span style="padding: 0 12px; font-size:14px; min-width: 30px; text-align:center;">${item.quantity}</span>
+                    <button onclick="updateQuantity(${index}, 1)" style="border:none; background:none; padding: 8px 12px; cursor:pointer;">+</button>
                   </div>
                 </td>
-                <td class="subtotal-cell">${typeof formatPrice === 'function' ? formatPrice(item.price * item.quantity) : '₦' + (item.price * item.quantity).toLocaleString()}</td>
+                <td style="padding: 24px 0; font-size: 14px; font-weight: 500;">${formatPrice(item.price * item.quantity)}</td>
               </tr>
             `).join('')}
           </tbody>
         </table>
-        <div class="cart-actions">
-          <a href="collection.html" class="action-btn">← Return To Shop</a>
-          <button class="action-btn" onclick="updateCart()">Update Cart</button>
-        </div>
+        <a href="collection.html" style="text-decoration:none; color: var(--black); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;">← Continue Shopping</a>
       </div>
 
-      <div class="cart-total-section">
-        <h3 class="total-title">Cart Total</h3>
-        <div class="total-row subtotal">
-          <span class="total-label">Subtotal:</span>
-          <span class="total-value">${typeof formatPrice === 'function' ? formatPrice(subtotal) : '₦' + subtotal.toLocaleString()}</span>
+      <div class="cart-total-section" style="background: #fff; border: 1px solid var(--warm-gray); padding: 40px;">
+        <h3 style="font-family: var(--serif); font-size: 24px; margin-bottom: 32px; font-weight: 400;">Selection Summary</h3>
+        <div style="display:flex; justify-content:space-between; margin-bottom: 16px; font-size: 14px;">
+          <span>Subtotal</span>
+          <span>${formatPrice(subtotal)}</span>
         </div>
-        <div class="total-row shipping">
-          <span class="total-label">Shipping:</span>
-          <span class="total-value">${shipping === 0 ? 'Free' : (typeof formatPrice === 'function' ? formatPrice(shipping) : '₦' + shipping.toLocaleString())}</span>
+        <div style="display:flex; justify-content:space-between; padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--warm-gray); font-size: 14px;">
+          <span>Shipping</span>
+          <span style="color: #22c55e;">Complimentary</span>
         </div>
-        <div class="total-row total">
-          <span class="total-label">Total:</span>
-          <span class="total-value">${typeof formatPrice === 'function' ? formatPrice(total) : '₦' + total.toLocaleString()}</span>
+        <div style="display:flex; justify-content:space-between; margin-bottom: 40px; font-size: 20px; font-family: var(--serif); font-weight: 500;">
+          <span>Total</span>
+          <span>${formatPrice(total)}</span>
         </div>
-        <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout →</button>
+        <button class="btn-primary" onclick="window.location.href='checkout.html'" style="width:100%; justify-content:center;">Complete Purchase</button>
       </div>
     </div>
   `;
-  
-  updateCartCount();
 }
 
-function getIcon(key) {
-  const icons = {
-    shirt: `<svg viewBox="0 0 100 100"><path d="M30 10 L10 30 L25 35 L25 90 L75 90 L75 35 L90 30 L70 10 L60 20 Q50 30 40 20 Z" stroke="#9a9490" stroke-width="3" fill="none" stroke-linejoin="round"/></svg>`,
-    bag: `<svg viewBox="0 0 100 100"><rect x="20" y="35" width="60" height="55" rx="4" stroke="#9a9490" stroke-width="3" fill="none"/><path d="M35 35 Q35 18 50 18 Q65 18 65 35" stroke="#9a9490" stroke-width="3" fill="none"/><line x1="20" y1="55" x2="80" y2="55" stroke="#9a9490" stroke-width="2"/></svg>`,
-    shoe: `<svg viewBox="0 0 100 100"><path d="M10 70 Q10 55 30 50 L55 48 Q72 47 80 55 Q90 65 88 72 Q86 78 10 78 Z" stroke="#9a9490" stroke-width="3" fill="none" stroke-linejoin="round"/><path d="M30 50 L30 35 Q30 25 42 25 L55 28 L55 48" stroke="#9a9490" stroke-width="2.5" fill="none"/></svg>`,
-    pants: `<svg viewBox="0 0 100 100"><path d="M25 10 L15 90 L40 90 L50 55 L60 90 L85 90 L75 10 Z" stroke="#9a9490" stroke-width="3" fill="none" stroke-linejoin="round"/></svg>`
-  };
-  return icons[key] || icons.shirt;
-}
+// ============================================
+// Actions
+// ============================================
 
-// Global functions
 window.updateQuantity = function(index, delta) {
   const newQty = cartItems[index].quantity + delta;
   if (newQty >= 1 && newQty <= 99) {
     cartItems[index].quantity = newQty;
+    saveCart();
     renderCart();
-    showToast(`${cartItems[index].name} quantity updated`);
   }
 };
 
 window.removeFromCart = function(index) {
-  const itemName = cartItems[index].name;
   cartItems.splice(index, 1);
+  saveCart();
   renderCart();
-  showToast(`${itemName} removed`);
 };
 
-window.updateCart = function() {
-  renderCart();
-  showToast('Cart updated');
+window.showToast = function(msg) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  document.getElementById('toastMsg').textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2600);
 };
 
-window.proceedToCheckout = function() {
-  if (cartItems.length === 0) {
-    showToast('Your cart is empty');
-    return;
-  }
-  localStorage.setItem('cart', JSON.stringify(cartItems));
-  window.location.href = 'checkout.html';
-};
+// ============================================
+// Lifecycle
+// ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  loadCart();
+  renderCart();
+  
+  // Hide loader
   setTimeout(() => {
     const loader = document.getElementById('loader');
     if (loader) loader.classList.add('hidden');
   }, 600);
-  renderCart();
 });
-

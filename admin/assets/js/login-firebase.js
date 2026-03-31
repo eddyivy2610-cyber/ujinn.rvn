@@ -31,3 +31,10 @@ window.handleLogin = async function(event) {
     btn.disabled = false;
   }
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        const loader = document.getElementById('loader');
+        if (loader) loader.classList.add('hidden');
+    }, 600);
+});

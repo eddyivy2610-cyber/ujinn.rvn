@@ -35,6 +35,10 @@ function initDashboard() {
     
     updateStats(currentProducts);
     renderProducts(currentProducts);
+
+    // Hide loader after first data fetch
+    const loader = document.getElementById('loader');
+    if (loader) loader.classList.add('hidden');
   }, (error) => {
     console.error("Error fetching products:", error);
     showToast("Failed to sync inventory", "error");
@@ -63,7 +67,9 @@ function renderProducts(products) {
     tbody.innerHTML = `
       <tr>
         <td colspan="6" style="text-align: center; padding: 100px 40px;">
-          <div style="font-size: 48px; margin-bottom: 20px; opacity: 0.4;">📦</div>
+          <div style="margin-bottom: 24px; opacity: 0.15;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+          </div>
           <div style="font-family: var(--serif); font-size: 24px; margin-bottom: 12px; font-weight: 300;">Your Collection is Empty</div>
           <p style="font-size: 13px; color: var(--mid-gray); max-width: 300px; margin: 0 auto 32px;">Start adding pieces to your digital showroom to showcase them to your clients.</p>
           <a href="product-edit.html" class="btn-primary">Add Your First Piece</a>
@@ -84,7 +90,7 @@ function renderProducts(products) {
       <td data-label="Product">
         <div class="td-product">
           <div class="td-img">
-            ${p.images && p.images[0] ? `<img src="${p.images[0]}" alt="${p.name}">` : `<div class="placeholder-icon">👕</div>`}
+            ${p.images && p.images[0] ? `<img src="${p.images[0]}" alt="${p.name}">` : `<div style="opacity:0.2;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.62 1.97v4.42a2 2 0 0 0 .76 1.58L7 14.3v6.3a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6.3l4.24-2.87a2 2 0 0 0 .76-1.58V5.43a2 2 0 0 0-1.62-1.97z"/></svg></div>`}
           </div>
           <div class="name-wrap">
             <strong>${escapeHtml(p.name)}</strong>

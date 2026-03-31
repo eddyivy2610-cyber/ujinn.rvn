@@ -99,7 +99,7 @@
 </head>
 <body>
 <div class="demo-container">
-  <h2>📦 Order Inquiry Demo</h2>
+  <h2>Order Inquiry</h2>
   
   <div id="cartItems"></div>
   
@@ -118,10 +118,12 @@
   
   <div class="channel-buttons">
     <button class="whatsapp-btn" onclick="sendOrderToWhatsApp()">
-      📱 Send via WhatsApp
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+      Send via WhatsApp
     </button>
     <button class="instagram-btn" onclick="sendOrderToInstagram()">
-      📸 Send via Instagram DM
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+      Send via Instagram DM
     </button>
   </div>
   
@@ -156,14 +158,14 @@
   function formatOrderMessage(customer, cart, total, notes) {
     const date = new Date().toLocaleString();
     
-    let message = `🛍 *NEW ORDER INQUIRY* 🛍\n\n`;
+    let message = `*NEW ORDER INQUIRY*\n\n`;
     message += `━━━━━━━━━━━━━━━━━━━━\n`;
-    message += `📅 *Date:* ${date}\n`;
-    message += `👤 *Customer:* ${customer.name}\n`;
-    message += `📞 *Phone:* ${customer.phone}\n`;
-    message += `🏠 *Address:* ${customer.address}\n`;
+    message += `*Date:* ${date}\n`;
+    message += `*Customer:* ${customer.name}\n`;
+    message += `*Phone:* ${customer.phone}\n`;
+    message += `*Address:* ${customer.address}\n`;
     message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-    message += `🛒 *ORDER ITEMS:*\n`;
+    message += `*ORDER ITEMS:*\n`;
     
     cart.forEach((item, index) => {
       const sizeText = item.size ? ` (${item.size})` : '';
@@ -174,10 +176,10 @@
     });
     
     message += `\n━━━━━━━━━━━━━━━━━━━━\n`;
-    message += `💰 *TOTAL:* ${formatPrice(total)}\n`;
+    message += `*TOTAL:* ${formatPrice(total)}\n`;
     
     if (notes) {
-      message += `\n📝 *SPECIAL NOTES:*\n${notes}\n`;
+      message += `\n*SPECIAL NOTES:*\n${notes}\n`;
     }
     
     message += `\n━━━━━━━━━━━━━━━━━━━━\n`;
@@ -329,7 +331,7 @@
   function formatOrderMessageForInstagram(customer, cart, total, notes) {
     const date = new Date().toLocaleString();
     
-    let message = `🛍 NEW ORDER INQUIRY 🛍\n\n`;
+    let message = `NEW ORDER INQUIRY\n\n`;
     message += `Date: ${date}\n`;
     message += `Customer: ${customer.name}\n`;
     message += `Phone: ${customer.phone}\n`;
@@ -404,7 +406,7 @@
     }
     
     container.innerHTML = `
-      <div style="margin-bottom: 16px; font-weight: 500;">🛒 Items in Cart:</div>
+      <div style="margin-bottom: 16px; font-weight: 500;">Items in Cart:</div>
       ${currentCart.map(item => `
         <div class="cart-item">
           <span>${item.name} ${item.size ? `(${item.size})` : ''} x${item.quantity}</span>

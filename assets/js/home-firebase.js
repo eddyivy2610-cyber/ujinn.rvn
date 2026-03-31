@@ -38,7 +38,7 @@ function renderProducts(filter = 'all') {
     <div class="product-card reveal" style="transition-delay:${i * 0.05}s" onclick="location.href='pages/product.html?id=${p.id}'">
       <div class="product-img-wrap">
         <div class="product-img-placeholder">
-          ${p.images && p.images[0] ? `<img src="${p.images[0]}" alt="${p.name}" loading="lazy">` : `<div class="fallback-icon">👕</div>`}
+          ${p.images && p.images[0] ? `<img src="${p.images[0]}" alt="${p.name}" loading="lazy">` : `<div style="opacity:0.2;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.62 1.97v4.42a2 2 0 0 0 .76 1.58L7 14.3v6.3a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6.3l4.24-2.87a2 2 0 0 0 .76-1.58V5.43a2 2 0 0 0-1.62-1.97z"/></svg></div>`}
         </div>
         ${p.badge ? `<span class="product-badge badge-${p.badge}">${p.badge}</span>` : ''}
         <div class="quick-add" onclick="event.stopPropagation(); window.addToCart('${p.name}')">+ Add to Cart</div>

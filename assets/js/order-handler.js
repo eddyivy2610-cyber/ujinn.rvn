@@ -46,14 +46,14 @@ function generateOrderText(customer, cart, total, notes, isWhatsApp = true) {
   });
   
   const divider = isWhatsApp ? `━━━━━━━━━━━━━━━━━━━━\n` : `--------------------\n`;
-  const icon = isWhatsApp ? `🛍 *NEW ORDER* 🛍\n\n` : `🛍 NEW ORDER INQUIRY 🛍\n\n`;
+  const icon = isWhatsApp ? `*NEW ORDER*\n\n` : `NEW ORDER INQUIRY\n\n`;
   
   let msg = icon + divider;
-  msg += `📅 Date: ${date}\n`;
-  msg += `👤 Customer: ${customer.name}\n`;
-  msg += `📞 Phone: ${customer.phone}\n`;
-  msg += `🏠 Address: ${customer.address}\n`;
-  msg += divider + `\n🛒 ITEMS:\n`;
+  msg += `Date: ${date}\n`;
+  msg += `Customer: ${customer.name}\n`;
+  msg += `Phone: ${customer.phone}\n`;
+  msg += `Address: ${customer.address}\n`;
+  msg += divider + `\nITEMS:\n`;
   
   cart.forEach((item, index) => {
     const size = item.size ? ` (${item.size.toUpperCase()})` : '';
@@ -62,10 +62,10 @@ function generateOrderText(customer, cart, total, notes, isWhatsApp = true) {
   });
   
   msg += `\n` + divider;
-  msg += `💰 TOTAL: ${formatPrice(total)}\n`;
+  msg += `TOTAL: ${formatPrice(total)}\n`;
   
   if (notes) {
-    msg += `\n📝 NOTES:\n${notes}\n`;
+    msg += `\nNOTES:\n${notes}\n`;
   }
   
   msg += divider;

@@ -150,6 +150,28 @@ body {
 }
 .toast.show { transform: translateY(0); opacity: 1; }
 
+/* LOADER */
+.loader { 
+    position: fixed; 
+    inset: 0; 
+    background: var(--white); 
+    z-index: 9000; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    transition: opacity 0.6s, visibility 0.6s; 
+}
+.loader.hidden { opacity: 0; visibility: hidden; }
+.loader-inner { 
+    width: 32px; 
+    height: 32px; 
+    border: 1.5px solid rgba(0,0,0,0.05); 
+    border-top-color: var(--black); 
+    border-radius: 50%; 
+    animation: rollingLoader 0.7s linear infinite; 
+}
+@keyframes rollingLoader { to { transform: rotate(360deg); } }
+
 .th-expand, .mobile-expand { display: none; }
 
 /* MOBILE DASHBOARD */

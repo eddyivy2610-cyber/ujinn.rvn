@@ -48,7 +48,7 @@ function renderProductDetails() {
   if (mainImg) {
     mainImg.innerHTML = currentProduct.images && currentProduct.images[0]
       ? `<img src="${currentProduct.images[0]}" alt="${currentProduct.name}" style="width:100%; height:100%; object-fit:cover;">`
-      : `<div class="fallback-icon">👕</div>`;
+      : `<div class="fallback-icon" style="opacity: 0.2;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.62 1.97v4.42a2 2 0 0 0 .76 1.58L7 14.3v6.3a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6.3l4.24-2.87a2 2 0 0 0 .76-1.58V5.43a2 2 0 0 0-1.62-1.97z"/></svg></div>`;
   }
 
   const thumbList = document.getElementById('thumbnailList');
@@ -76,7 +76,7 @@ async function renderRelatedItems() {
       <div class="product-card reveal" style="transition-delay:${i * 0.05}s" onclick="location.href='product.html?id=${p.id}'">
         <div class="product-img-wrap">
           <div class="product-img-placeholder">
-            ${p.images && p.images[0] ? `<img src="${p.images[0]}" alt="${p.name}" loading="lazy">` : `👕`}
+            ${p.images && p.images[0] ? `<img src="${p.images[0]}" alt="${p.name}" loading="lazy">` : `<div style="opacity:0.2;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.62 1.97v4.42a2 2 0 0 0 .76 1.58L7 14.3v6.3a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6.3l4.24-2.87a2 2 0 0 0 .76-1.58V5.43a2 2 0 0 0-1.62-1.97z"/></svg></div>`}
           </div>
           <div class="quick-add" onclick="event.stopPropagation(); window.addToCartSimple('${p.name}')">+ Add to Cart</div>
         </div>
@@ -112,9 +112,35 @@ window.changeQty = function(n) {
 };
 
 window.addToCart = function() {
-  if (currentProduct) {
-    window.showToast(`"${currentProduct.name}" added to cart`);
+  if (!currentProduct) return;
+  const size = document.querySelector('.size-box.active')?.textContent || 'M';
+  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  
+  const product = {
+    id: currentProduct.id,
+    name: currentProduct.name,
+    price: currentProduct.price,
+    image: currentProduct.images?.[0] || '',
+    quantity: currentQty,
+    size: size
+  };
+  
+  // Check if already in cart
+  const existingIndex = cart.findIndex(item => item.id === product.id && item.size === product.size);
+  if (existingIndex > -1) {
+    cart[existingIndex].quantity += currentQty;
+  } else {
+    cart.push(product);
   }
+  
+  localStorage.setItem('cart', JSON.stringify(cart));
+  
+  // Update cart count for nav
+  const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  localStorage.setItem('cartCount', totalCount);
+  window.dispatchEvent(new Event('cartUpdated'));
+  
+  window.showToast(`"${currentProduct.name}" added to cart`);
 };
 
 window.buyNow = function() {

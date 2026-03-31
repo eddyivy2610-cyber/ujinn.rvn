@@ -21,8 +21,14 @@ let uploadedImages = [];
 onAuthStateChanged(auth, (user) => {
   if (!user && !window.location.href.includes('index.html')) {
     window.location.href = '../index.html';
-  } else if (user && editingId) {
-    loadProductData();
+  } else if (user) {
+    if (editingId) {
+      loadProductData();
+    } else {
+      // Hide loader immediately for new item
+      const loader = document.getElementById('loader');
+      if (loader) loader.classList.add('hidden');
+    }
   }
 });
 
@@ -48,6 +54,9 @@ async function loadProductData() {
     }
   } catch (err) {
     console.error("Error loading product:", err);
+  } finally {
+    const loader = document.getElementById('loader');
+    if (loader) loader.classList.add('hidden');
   }
 }
 

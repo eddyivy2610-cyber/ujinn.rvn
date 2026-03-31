@@ -82,7 +82,8 @@ function renderCart() {
                     </div>
                     <div class="product-details">
                       <h4 style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">${item.name}</h4>
-                      <p style="font-size: 12px; color: var(--mid-gray); margin-bottom: 12px;">Size: ${item.size}</p>
+                      <p style="font-size: 11px; color: var(--mid-gray); margin-bottom: 2px;">Size: ${item.size || 'Default'}</p>
+                      <p style="font-size: 11px; color: var(--mid-gray); margin-bottom: 12px;">Color: ${item.color || 'Default'}</p>
                       <button class="remove-btn" onclick="removeFromCart(${index})" style="background:none; border:none; border-bottom: 1px solid #ccc; font-size: 11px; padding:0; cursor:pointer; color: var(--mid-gray);">Remove Item</button>
                     </div>
                   </div>

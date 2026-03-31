@@ -59,6 +59,42 @@ function renderProductDetails() {
       </div>
     `).join('');
   }
+
+  // Render Colors
+  const colorOptions = document.getElementById('colorOptions');
+  if (colorOptions) {
+    const colors = currentProduct.colors || [];
+    if (colors.length > 0) {
+      const colorHtml = colors.map((c, i) => `
+        <div class="color-dot ${i === 0 ? 'active' : ''}" style="background-color: ${c.toLowerCase()};" title="${c}" onclick="window.selectColor('${c}', this)"></div>
+      `).join('');
+      colorOptions.innerHTML = `<span class="option-label">Colours:</span> ${colorHtml}`;
+      if (currentProduct.colorNotes) {
+        colorOptions.innerHTML += `<div class="color-tip" style="font-size: 11px; margin-top: 8px; color: var(--mid-gray); display:flex; align-items:center; gap:6px; opacity:0.8;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          ${currentProduct.colorNotes}
+        </div>`;
+      }
+      colorOptions.parentElement.style.display = 'block';
+    } else {
+      colorOptions.parentElement.style.display = 'none';
+    }
+  }
+
+  // Render Sizes
+  const sizeOptions = document.getElementById('sizeOptions');
+  if (sizeOptions) {
+    const sizes = currentProduct.sizes || [];
+    if (sizes.length > 0) {
+      const sizeHtml = sizes.map((s, i) => `
+        <div class="size-box ${i === 0 ? 'active' : ''}" onclick="window.selectSize('${s}', this)">${s}</div>
+      `).join('');
+      sizeOptions.innerHTML = `<span class="option-label">Size:</span> ${sizeHtml}`;
+      sizeOptions.parentElement.style.display = 'block';
+    } else {
+      sizeOptions.parentElement.style.display = 'none';
+    }
+  }
 }
 
 async function renderRelatedItems() {
@@ -109,12 +145,15 @@ window.changeQty = function(n) {
 };
 
 // Size selection logic
-document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('size-box')) {
-    document.querySelectorAll('.size-box').forEach(b => b.classList.remove('active'));
-    e.target.classList.add('active');
-  }
-});
+window.selectSize = function(size, el) {
+  document.querySelectorAll('.size-box').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+};
+
+window.selectColor = function(color, el) {
+  document.querySelectorAll('.color-dot').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+};
 
 window.addToCartSimple = function(productId, name, price, image) {
   const cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -143,7 +182,8 @@ window.addToCartSimple = function(productId, name, price, image) {
 
 window.addToCart = function() {
   if (!currentProduct) return;
-  const size = document.querySelector('.size-box.active')?.textContent || 'M';
+  const size = document.querySelector('.size-box.active')?.textContent || 'Default';
+  const color = document.querySelector('.color-dot.active')?.title || 'Default';
   const cart = JSON.parse(localStorage.getItem('cart') || '[]');
   
   const product = {
@@ -152,7 +192,8 @@ window.addToCart = function() {
     price: currentProduct.price,
     image: currentProduct.images?.[0] || '',
     quantity: currentQty,
-    size: size
+    size: size,
+    color: color
   };
   
   // Check if already in cart
@@ -175,7 +216,8 @@ window.addToCart = function() {
 
 window.buyNow = function() {
   if (!currentProduct) return;
-  const size = document.querySelector('.size-box.active')?.textContent || 'M';
+  const size = document.querySelector('.size-box.active')?.textContent || 'Default';
+  const color = document.querySelector('.color-dot.active')?.title || 'Default';
   const qty = currentQty;
   const total = currentProduct.price * qty;
   const phone = "2348147396890";
@@ -184,6 +226,7 @@ window.buyNow = function() {
   
 Item: ${currentProduct.name}
 Size: ${size}
+Color: ${color}
 Quantity: ${qty}
 Total: ₦${total.toLocaleString()}
 

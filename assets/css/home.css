@@ -732,6 +732,34 @@ nav.scrolled {
   font-size: 11.5px;
 }
 
+.product-variants {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  opacity: 0.75;
+}
+
+.variant-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.v-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--warm-gray);
+}
+
+.v-sizes {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mid-gray);
+  font-weight: 500;
+}
+
 /* NEWSLETTER */
 .newsletter {
   background: var(--light-gray);

@@ -24,7 +24,8 @@ window.addToCartSimple = function(productId, name, price, image) {
         price: price,
         image: image || '',
         quantity: 1,
-        size: 'M' // Default for quick add
+        size: 'Default', // Default for quick add
+        color: 'Default'
     };
     
     const existingIndex = cart.findIndex(item => item.id === product.id && item.size === product.size);

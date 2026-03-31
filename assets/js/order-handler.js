@@ -56,9 +56,10 @@ function generateOrderText(customer, cart, total, notes, isWhatsApp = true) {
   msg += divider + `\nITEMS:\n`;
   
   cart.forEach((item, index) => {
-    const size = item.size ? ` (${item.size.toUpperCase()})` : '';
+    const size = item.size ? ` (Size: ${item.size.toUpperCase()})` : '';
+    const color = item.color ? ` (Color: ${item.color})` : '';
     const quantity = item.quantity || 1;
-    msg += `${index + 1}. ${item.name}${size} x${quantity} — ${formatPrice(item.price * quantity)}\n`;
+    msg += `${index + 1}. ${item.name}${size}${color} x${quantity} — ${formatPrice(item.price * quantity)}\n`;
   });
   
   msg += `\n` + divider;
@@ -179,10 +180,17 @@ function loadCheckoutSummary() {
   cart.forEach(item => {
     const qty = item.quantity || 1;
     const sub = item.price * qty;
+    const sizeStr = item.size ? `<small>(${item.size.toUpperCase()})</small>` : '';
+    const colorStr = item.color ? `<small>${item.color}</small>` : '';
     total += sub;
     html += `
       <div class="summary-item">
-        <span>${item.name} ${item.size ? `<small>(${item.size.toUpperCase()})</small>` : ''} x${qty}</span>
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <span>${item.name} x${qty}</span>
+          <div style="font-size: 10px; color: var(--mid-gray); display:flex; gap:8px;">
+            ${sizeStr} ${colorStr}
+          </div>
+        </div>
         <span>${formatPrice(sub)}</span>
       </div>
     `;

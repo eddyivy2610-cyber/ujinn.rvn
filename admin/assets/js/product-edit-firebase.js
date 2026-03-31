@@ -49,6 +49,9 @@ async function loadProductData() {
       document.getElementById('stock').value = p.stock || 0;
       document.getElementById('badge').value = p.badge || '';
       document.getElementById('desc').value = p.description || '';
+      document.getElementById('colors').value = (p.colors || []).join(', ');
+      document.getElementById('sizes').value = (p.sizes || []).join(', ');
+      document.getElementById('colorNotes').value = p.colorNotes || '';
       uploadedImages = p.images || [];
       renderImages();
     }
@@ -139,6 +142,9 @@ document.getElementById('editorForm').onsubmit = async function(e) {
     badge: document.getElementById('badge').value,
     description: document.getElementById('desc').value,
     images: uploadedImages,
+    colors: document.getElementById('colors').value.split(',').map(s => s.trim()).filter(s => s),
+    sizes: document.getElementById('sizes').value.split(',').map(s => s.trim()).filter(s => s),
+    colorNotes: document.getElementById('colorNotes').value.trim(),
     updatedAt: serverTimestamp()
   };
 

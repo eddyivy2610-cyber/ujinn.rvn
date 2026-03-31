@@ -49,6 +49,10 @@ function renderProducts(filter = 'all') {
       <div class="product-info">
         <div class="product-name">${p.name}</div>
         <div class="product-price">₦${Number(p.price || 0).toLocaleString()}</div>
+        <div class="product-variants">
+          ${(p.colors || []).length > 0 ? `<div class="variant-dots">${p.colors.map(c => `<span class="v-dot" style="background:${c.toLowerCase()}"></span>`).join('')}</div>` : ''}
+          ${(p.sizes || []).length > 0 ? `<span class="v-sizes">${p.sizes.length} Sizes</span>` : ''}
+        </div>
       </div>
     </div>`).join('');
   

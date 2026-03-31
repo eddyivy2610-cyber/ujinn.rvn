@@ -6,7 +6,7 @@
 
 const STORE_CONFIG = {
   whatsappNumber: "2348147396890", 
-  instagramUsername: "ujinn.rvn",
+  instagramUsername: "corruptedujinn",
   storeName: "UJINN.RVN",
   checkoutSuccessPath: "collection.html"
 };

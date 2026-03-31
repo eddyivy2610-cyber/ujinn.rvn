@@ -77,4 +77,8 @@ function showToast(msg) {
 }
 
 // Initialize
-document.addEventListener('DOMContentLoaded', initHome);
+document.addEventListener('DOMContentLoaded', () => {
+  initHome();
+  // Observe all static .reveal elements (newsletter, section headers, etc.)
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+});

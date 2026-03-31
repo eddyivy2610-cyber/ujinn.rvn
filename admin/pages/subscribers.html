@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subscribers — UJINN•RVN Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+  :root {
+    --black: #0d0c0b; --white: #f9f7f4; --warm-gray: #e8e4de;
+    --mid-gray: #9a9490; --light-gray: #f3f1ed; --accent: #000000;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  /* ── Stats ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px; }
+  .stat-card { background: var(--white); border: 1px solid var(--warm-gray); padding: 32px; }
+  .stat-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid-gray); font-weight: 600; margin-bottom: 12px; }
+  .stat-value { font-family: var(--serif); font-size: 36px; font-weight: 300; color: var(--black); }
+
+  /* ── Compose Panel ── */
+  .compose-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 48px; }
+  .panel { background: var(--white); border: 1px solid var(--warm-gray); padding: 36px; }
+  .panel-title { font-family: var(--serif); font-size: 22px; font-weight: 300; margin-bottom: 4px; }
+  .panel-sub { font-size: 12px; color: var(--mid-gray); margin-bottom: 28px; }
+  .form-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mid-gray); font-weight: 600; display: block; margin-bottom: 8px; }
+  .form-input, .form-textarea, .form-select {
+    width: 100%; padding: 13px 16px; border: 1px solid var(--warm-gray); background: var(--light-gray);
+    font-family: var(--sans); font-size: 13.5px; color: var(--text); outline: none;
+    transition: border-color 0.2s; border-radius: 0; appearance: none;
+  }
+  .form-textarea { min-height: 110px; resize: vertical; }
+  .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--black); background: var(--white); }
+  .form-group { margin-bottom: 18px; }
+  .char-count { font-size: 11px; color: var(--mid-gray); margin-top: 4px; text-align: right; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--black); color: var(--white);
+    border: 2px solid var(--black); padding: 14px 32px;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    font-weight: 600; font-family: var(--sans); cursor: pointer;
+    transition: background 0.25s, color 0.25s; text-decoration: none;
+  }
+  .btn-primary:hover { background: transparent; color: var(--black); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: transparent; color: var(--black);
+    border: 1px solid var(--warm-gray); padding: 12px 28px;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    font-weight: 500; font-family: var(--sans); cursor: pointer;
+    transition: 0.25s; text-decoration: none;
+  }
+  .btn-outline:hover { border-color: var(--black); }
+
+  /* ── Subscriber Table ── */
+  .table-wrap { background: var(--white); border: 1px solid var(--warm-gray); overflow: hidden; }
+  .table-header { display: flex; align-items: center; justify-content: space-between; padding: 24px 28px; border-bottom: 1px solid var(--warm-gray); }
+  .table-title { font-family: var(--serif); font-size: 22px; font-weight: 300; }
+  .search-bar { display: flex; gap: 0; }
+  .search-bar input { padding: 10px 16px; border: 1px solid var(--warm-gray); border-right: none; font-family: var(--sans); font-size: 13px; outline: none; width: 240px; background: var(--light-gray); }
+  .search-bar input:focus { border-color: var(--black); background: var(--white); }
+  .search-bar button { padding: 10px 18px; background: var(--black); color: white; border: none; cursor: pointer; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--sans); transition: opacity 0.2s; }
+  .search-bar button:hover { opacity: 0.75; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mid-gray); text-align: left; padding: 16px 24px; border-bottom: 1px solid var(--warm-gray); background: var(--light-gray); font-weight: 600; }
+  td { padding: 18px 24px; border-bottom: 1px solid var(--warm-gray); font-size: 13.5px; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(232,228,222,0.2); }
+
+  .sub-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .dot-active { background: #2d6a4f; }
+  .dot-unsubscribed { background: #b5451b; }
+  .dot-unconfirmed { background: #f0a500; }
+
+  .sub-delete { background: none; border: none; cursor: pointer; color: var(--mid-gray); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--sans); font-weight: 600; transition: color 0.2s; }
+  .sub-delete:hover { color: #b5451b; }
+
+  .empty-state { padding: 80px; text-align: center; color: var(--mid-gray); font-size: 14px; }
+  .empty-state svg { display: block; margin: 0 auto 16px; opacity: 0.3; }
+
+  /* ── Pagination ── */
+  .table-footer { display: flex; align-items: center; justify-content: space-between; padding: 20px 28px; border-top: 1px solid var(--warm-gray); }
+  .page-info { font-size: 12px; color: var(--mid-gray); }
+  .page-btns { display: flex; gap: 6px; }
+  .page-btn { padding: 8px 16px; border: 1px solid var(--warm-gray); background: none; font-size: 11px; cursor: pointer; transition: 0.2s; font-family: var(--sans); }
+  .page-btn:hover:not(:disabled) { border-color: var(--black); }
+  .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* ── Config Notice ── */
+  .config-notice { background: #fffbeb; border: 1px solid #f0d070; padding: 16px 24px; margin-bottom: 36px; display: flex; align-items: center; gap: 12px; font-size: 13px; border-radius: 2px; }
+  .config-notice svg { flex-shrink: 0; color: #c47c00; }
+  .config-notice a { color: var(--black); font-weight: 600; }
+  .config-notice.hidden { display: none; }
+
+  /* ── Toast ── */
+  .toast { position: fixed; bottom: 28px; right: 28px; background: var(--black); color: white; font-size: 12.5px; padding: 14px 22px; z-index: 9999; transform: translateY(60px); opacity: 0; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-dot { width: 7px; height: 7px; background: #5cb85c; border-radius: 50%; }
+
+  /* ── Loader ── */
+  .loader { position: fixed; inset: 0; background: var(--black); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s, visibility 0.5s; }
+  .loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  .loader-inner { width: 44px; height: 44px; border-radius: 50%; animation: spin 1.4s linear infinite; }
+  .loader-inner::before { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 1px solid #fff; animation: rollingInner 2s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes rollingInner {
+    0%   { clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0); }
+    25%  { clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0); }
+    50%  { clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%); }
+    75%  { clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%); }
+    100% { clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0); }
+  }
+
+  @media (max-width: 900px) {
+    .compose-wrap { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .search-bar input { width: 160px; }
+  }
+</style>
+</head>
+<body>
+<div class="loader" id="loader"><div class="loader-inner"></div></div>
+
+<!-- ADMIN HEADER -->
+<header class="admin-header" style="position:sticky;top:0;z-index:100;background:rgba(249,247,244,0.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--warm-gray);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:70px;">
+  <div style="display:flex;align-items:center;gap:40px;">
+    <a href="dashboard.html" style="font-family:var(--serif);font-size:22px;font-weight:300;color:var(--black);text-decoration:none;">UJINN•RVN <small style="font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:var(--mid-gray);font-family:var(--sans);font-weight:500;">Admin</small></a>
+    <nav style="display:flex;gap:28px;">
+      <a href="dashboard.html" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid-gray);text-decoration:none;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='#0d0c0b'" onmouseout="this.style.color='#9a9490'">Inventory</a>
+      <a href="subscribers.html" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--black);text-decoration:none;font-weight:600;border-bottom:1px solid var(--black);padding-bottom:2px;">Subscribers</a>
+    </nav>
+  </div>
+  <button onclick="adminLogout()" style="background:none;border:1px solid var(--warm-gray);padding:8px 20px;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-family:var(--sans);font-weight:600;transition:0.2s;" onmouseover="this.style.borderColor='#0d0c0b'" onmouseout="this.style.borderColor='#e8e4de'">Logout</button>
+</header>
+
+<main style="max-width:1200px;margin:0 auto;padding:48px 40px;">
+
+  <!-- Page Title -->
+  <div style="margin-bottom:36px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+    <div>
+      <h1 style="font-family:var(--serif);font-size:36px;font-weight:300;color:var(--black);margin-bottom:4px;">Subscribers</h1>
+      <p style="font-size:13px;color:var(--mid-gray);">Manage your newsletter list and send email campaigns via MailerLite.</p>
+    </div>
+    <a href="https://app.mailerlite.com" target="_blank" class="btn-outline">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Open MailerLite
+    </a>
+  </div>
+
+  <!-- Config Warning -->
+  <div class="config-notice" id="configNotice">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span>MailerLite API key not configured. Open <code style="background:#f3eb9c;padding:1px 5px;font-size:12px;">assets/js/newsletter.js</code> and add your <strong>API key</strong> and <strong>Group ID</strong>, then refresh. <a href="https://app.mailerlite.com" target="_blank">Get your key →</a></span>
+  </div>
+
+  <!-- Stats -->
+  <section class="stats-grid">
+    <div class="stat-card">
+      <p class="stat-label">Total Subscribers</p>
+      <div class="stat-value" id="statTotal">—</div>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Active</p>
+      <div class="stat-value" id="statActive" style="color:#2d6a4f;">—</div>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Unsubscribed</p>
+      <div class="stat-value" id="statUnsub" style="color:#b5451b;">—</div>
+    </div>
+  </section>
+
+  <!-- Compose + Quick Actions -->
+  <div class="compose-wrap">
+    <!-- Send Campaign Notice -->
+    <div class="panel">
+      <p class="panel-title">Send a Campaign</p>
+      <p class="panel-sub">Campaigns are created and sent from MailerLite's dashboard to ensure reliable delivery, unsubscribe compliance, and analytics.</p>
+
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <a href="https://app.mailerlite.com/campaigns/create" target="_blank" class="btn-primary" style="justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+          Create New Campaign
+        </a>
+        <a href="https://app.mailerlite.com/campaigns" target="_blank" class="btn-outline" style="justify-content:center;">View Past Campaigns</a>
+      </div>
+
+      <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--warm-gray);">
+        <p style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid-gray);font-weight:600;margin-bottom:16px;">Quick Tips</p>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;">
+          <li style="display:flex;gap:10px;font-size:12.5px;color:var(--mid-gray);align-items:flex-start;">
+            <span style="width:5px;height:5px;background:var(--mid-gray);border-radius:50%;flex-shrink:0;margin-top:6px;"></span>
+            Send at least 24 hrs before a product drop for maximum open rate.
+          </li>
+          <li style="display:flex;gap:10px;font-size:12.5px;color:var(--mid-gray);align-items:flex-start;">
+            <span style="width:5px;height:5px;background:var(--mid-gray);border-radius:50%;flex-shrink:0;margin-top:6px;"></span>
+            Use the group <strong style="color:var(--black);" id="groupLabel">UJINN Newsletter</strong> to target storefront subscribers.
+          </li>
+          <li style="display:flex;gap:10px;font-size:12.5px;color:var(--mid-gray);align-items:flex-start;">
+            <span style="width:5px;height:5px;background:var(--mid-gray);border-radius:50%;flex-shrink:0;margin-top:6px;"></span>
+            Best days: Tuesday–Thursday, 9 AM–11 AM local time.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Add Subscriber Manually -->
+    <div class="panel">
+      <p class="panel-title">Add Subscriber</p>
+      <p class="panel-sub">Manually add a contact to your newsletter group.</p>
+      <form id="addForm" onsubmit="addSubscriber(event)">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="addEmail" class="form-input" placeholder="customer@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">First Name <span style="color:var(--mid-gray);font-weight:400;">(optional)</span></label>
+          <input type="text" id="addName" class="form-input" placeholder="e.g. Zara">
+        </div>
+        <button type="submit" class="btn-primary" id="addBtn" style="width:100%;justify-content:center;margin-top:8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Add to List
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Subscribers Table -->
+  <div class="table-wrap">
+    <div class="table-header">
+      <span class="table-title">All Subscribers</span>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search by email…" oninput="filterTable(this.value)">
+        <button onclick="filterTable(document.getElementById('searchInput').value)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Subscribed On</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="subTableBody">
+        <tr><td colspan="5" class="empty-state">Loading subscribers…</td></tr>
+      </tbody>
+    </table>
+    <div class="table-footer">
+      <span class="page-info" id="pageInfo">—</span>
+      <div class="page-btns">
+        <button class="page-btn" id="prevBtn" disabled onclick="changePage(-1)">← Prev</button>
+        <button class="page-btn" id="nextBtn" disabled onclick="changePage(1)">Next →</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"><div class="toast-dot" id="toastDot"></div><span id="toastMsg"></span></div>
+
+<script src="../assets/js/newsletter.js"></script>
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+const API     = () => '/.netlify/functions/ml-proxy?path=';
+const GROUP   = () => '{GROUP_ID}'; // Netlify function handles the actual ID
+
+const PLACEHOLDER_KEY = '';
+const PAGE_SIZE = 25;
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let allSubs = [];
+let filtered = [];
+let currentPage = 1;
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load', async () => {
+  // Loader
+  setTimeout(() => document.getElementById('loader')?.classList.add('hidden'), 700);
+
+  // We rely on Netlify env vars now. Start loading immediately.
+  document.getElementById('configNotice').classList.add('hidden');
+  await loadSubscribers();
+});
+
+// ── Auth guard ────────────────────────────────────────────────────────────────
+window.adminLogout = function () {
+  try {
+    import('../assets/js/login-firebase.js').then(m => m.signOut?.());
+  } catch (_) {}
+  localStorage.clear();
+  window.location.href = '../index.html';
+};
+
+// ── Load subscribers from MailerLite ─────────────────────────────────────────
+async function loadSubscribers() {
+  try {
+    const url = GROUP()
+      ? `${API()}groups/${GROUP()}/subscribers&limit=1000`
+      : `${API()}subscribers&limit=1000`;
+
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data?.message || `HTTP ${res.status}`);
+
+    allSubs  = data.data || [];
+    filtered = [...allSubs];
+
+    // Stats
+    const active = allSubs.filter(s => s.status === 'active').length;
+    const unsub  = allSubs.filter(s => s.status === 'unsubscribed').length;
+    document.getElementById('statTotal').textContent  = allSubs.length;
+    document.getElementById('statActive').textContent = active;
+    document.getElementById('statUnsub').textContent  = unsub;
+
+    renderPage(1);
+  } catch (err) {
+    console.error('[Subscribers]', err);
+    document.getElementById('subTableBody').innerHTML =
+      `<tr><td colspan="5" class="empty-state" style="color:#b5451b;">Failed to load subscribers: ${err.message}</td></tr>`;
+  }
+}
+
+// ── Render table page ─────────────────────────────────────────────────────────
+function renderPage(page) {
+  currentPage = page;
+  const start = (page - 1) * PAGE_SIZE;
+  const slice = filtered.slice(start, start + PAGE_SIZE);
+  const body  = document.getElementById('subTableBody');
+
+  if (filtered.length === 0) {
+    body.innerHTML = `<tr><td colspan="5" class="empty-state">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      No subscribers found.
+    </td></tr>`;
+    document.getElementById('pageInfo').textContent = '0 subscribers';
+    document.getElementById('prevBtn').disabled = true;
+    document.getElementById('nextBtn').disabled = true;
+    return;
+  }
+
+  body.innerHTML = slice.map(s => {
+    const name  = [s.fields?.find(f => f.key==='name')?.value, s.fields?.find(f => f.key==='last_name')?.value]
+                  .filter(Boolean).join(' ') || '—';
+    const date  = s.created_at ? new Date(s.created_at).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}) : '—';
+    const status = s.status || 'unknown';
+    const dotCls = status === 'active' ? 'dot-active' : status === 'unsubscribed' ? 'dot-unsubscribed' : 'dot-unconfirmed';
+    return `<tr>
+      <td style="font-family:var(--sans);">${s.email}</td>
+      <td style="color:var(--mid-gray);">${name}</td>
+      <td><span class="sub-status"><span class="dot ${dotCls}"></span>${status}</span></td>
+      <td style="color:var(--mid-gray);font-size:12.5px;">${date}</td>
+      <td><button class="sub-delete" onclick="deleteSubscriber('${s.id}', '${s.email}')">Remove</button></td>
+    </tr>`;
+  }).join('');
+
+  const total = filtered.length;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  document.getElementById('pageInfo').textContent =
+    `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, total)} of ${total}`;
+  document.getElementById('prevBtn').disabled = page <= 1;
+  document.getElementById('nextBtn').disabled = page >= totalPages;
+}
+
+function changePage(dir) {
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const next = currentPage + dir;
+  if (next >= 1 && next <= totalPages) renderPage(next);
+}
+
+// ── Search filter ─────────────────────────────────────────────────────────────
+window.filterTable = function (q) {
+  const term = q.toLowerCase().trim();
+  filtered = term ? allSubs.filter(s => s.email.toLowerCase().includes(term)) : [...allSubs];
+  renderPage(1);
+};
+
+// ── Add subscriber ────────────────────────────────────────────────────────────
+window.addSubscriber = async function (e) {
+  e.preventDefault();
+  const email = document.getElementById('addEmail').value.trim();
+  const name  = document.getElementById('addName').value.trim();
+  const btn   = document.getElementById('addBtn');
+
+  btn.disabled = true;
+  btn.textContent = 'Adding…';
+
+  try {
+    const payload = { email, groups: GROUP() ? [GROUP()] : [] };
+    if (name) payload.fields = { name };
+
+    const res  = await fetch(`${API()}subscribers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const body = await res.json();
+
+    if (res.ok || res.status === 201 || res.status === 200) {
+      showToast(`${email} added successfully.`, 'success');
+      document.getElementById('addForm').reset();
+      await loadSubscribers();
+    } else {
+      throw new Error(body?.message || `HTTP ${res.status}`);
+    }
+  } catch (err) {
+    showToast(`Error: ${err.message}`, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> Add to List`;
+  }
+};
+
+// ── Delete subscriber ─────────────────────────────────────────────────────────
+window.deleteSubscriber = async function (id, email) {
+  if (!confirm(`Remove ${email} from your list?`)) return;
+  try {
+    const res = await fetch(`${API()}subscribers/${id}`, {
+      method: 'DELETE'
+    });
+    if (res.ok || res.status === 204) {
+      showToast(`${email} removed.`, 'success');
+      await loadSubscribers();
+    } else {
+      const b = await res.json().catch(() => ({}));
+      throw new Error(b?.message || `HTTP ${res.status}`);
+    }
+  } catch (err) {
+    showToast(`Error: ${err.message}`, 'error');
+  }
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const colours = { success: '#5cb85c', error: '#b5451b', info: '#f0a500' };
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastDot').style.background = colours[type] || colours.success;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>

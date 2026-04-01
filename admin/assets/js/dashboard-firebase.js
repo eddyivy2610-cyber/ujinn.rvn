@@ -5,13 +5,37 @@ import {
   deleteDoc, 
   doc, 
   query, 
-  orderBy 
+  orderBy,
+  writeBatch,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
 let currentProducts = [];
 let currentPage = 1;
 const itemsPerPage = 8; // Adjust as needed
+
+function getBulkFxRate() {
+  const el = document.getElementById('bulkFxRate');
+  const rate = parseFloat(el?.value);
+  return Number.isFinite(rate) && rate > 0 ? rate : null;
+}
+
+function setBulkStatus(msg) {
+  const el = document.getElementById('bulkFxStatus');
+  if (el) el.textContent = msg || '';
+}
+
+function initBulkFxRate() {
+  const input = document.getElementById('bulkFxRate');
+  if (!input) return;
+  const saved = localStorage.getItem('ujinn_fx_rate');
+  if (saved && !input.value) input.value = saved;
+  input.addEventListener('input', () => {
+    const rate = getBulkFxRate();
+    if (rate) localStorage.setItem('ujinn_fx_rate', rate.toString());
+  });
+}
 
 /**
  * AUTH GUARD
@@ -20,6 +44,7 @@ onAuthStateChanged(auth, (user) => {
   if (!user && !window.location.href.includes('index.html')) {
     window.location.href = '../index.html';
   } else if (user) {
+    initBulkFxRate();
     initDashboard();
   }
 });
@@ -201,3 +226,45 @@ function showToast(message, type = 'success') {
   toast.className = `toast show ${type}`;
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
+
+window.applyFxToAll = async function() {
+  const rate = getBulkFxRate();
+  if (!rate) {
+    showToast('Enter a valid FX rate first.', 'error');
+    return;
+  }
+  if (currentProducts.length === 0) {
+    showToast('No products to update.', 'info');
+    return;
+  }
+  const confirmMsg = `Apply FX rate ${rate} to all products? This will overwrite existing USD prices.`;
+  if (!confirm(confirmMsg)) return;
+
+  const btn = document.getElementById('bulkFxBtn');
+  if (btn) btn.disabled = true;
+  setBulkStatus('Updating USD prices...');
+
+  const batchSize = 400;
+  let updated = 0;
+  try {
+    for (let i = 0; i < currentProducts.length; i += batchSize) {
+      const slice = currentProducts.slice(i, i + batchSize);
+      const batch = writeBatch(db);
+      slice.forEach(p => {
+        const ngn = Number(p.price || 0);
+        if (!ngn) return;
+        const usd = Number((ngn / rate).toFixed(2));
+        batch.update(doc(db, "products", p.id), { priceUSD: usd, updatedAt: serverTimestamp() });
+        updated += 1;
+      });
+      await batch.commit();
+    }
+    showToast(`Updated USD price for ${updated} products.`);
+  } catch (err) {
+    console.error('Bulk FX error:', err);
+    showToast('Failed to apply FX rate.', 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+    setBulkStatus('');
+  }
+};

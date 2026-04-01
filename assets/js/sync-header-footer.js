@@ -16,12 +16,14 @@ window.updateNavCartCount = function() {
     });
 };
 
-window.addToCartSimple = function(productId, name, price, image) {
+window.addToCartSimple = function(productId, name, price, image, currencyCode) {
+    const resolvedCurrency = currencyCode || (window.currencyUtils ? window.currencyUtils.getCurrencySync().code : 'NGN');
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     const product = {
         id: productId,
         name: name,
         price: price,
+        currency: resolvedCurrency,
         image: image || '',
         quantity: 1,
         size: 'Default', // Default for quick add

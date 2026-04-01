@@ -16,12 +16,56 @@ const CLOUDINARY_UPLOAD_PRESET = "ujinn123";
 
 let editingId = new URLSearchParams(window.location.search).get('id');
 let uploadedImages = []; 
+let isAutoSyncing = false;
+
+function getFxRate() {
+  const rate = parseFloat(document.getElementById('fxRate')?.value);
+  return Number.isFinite(rate) && rate > 0 ? rate : null;
+}
+
+function syncPrices(fromField) {
+  if (isAutoSyncing) return;
+  const rate = getFxRate();
+  if (!rate) return;
+  const ngnEl = document.getElementById('price');
+  const usdEl = document.getElementById('priceUSD');
+  if (!ngnEl || !usdEl) return;
+
+  isAutoSyncing = true;
+  if (fromField === 'ngn') {
+    const ngn = parseFloat(ngnEl.value);
+    if (Number.isFinite(ngn)) usdEl.value = (ngn / rate).toFixed(2);
+  } else if (fromField === 'usd') {
+    const usd = parseFloat(usdEl.value);
+    if (Number.isFinite(usd)) ngnEl.value = Math.round(usd * rate);
+  }
+  isAutoSyncing = false;
+}
+
+function initPriceSync() {
+  const fxEl = document.getElementById('fxRate');
+  const ngnEl = document.getElementById('price');
+  const usdEl = document.getElementById('priceUSD');
+  if (!fxEl || !ngnEl || !usdEl) return;
+
+  const savedRate = localStorage.getItem('ujinn_fx_rate');
+  if (savedRate && !fxEl.value) fxEl.value = savedRate;
+
+  fxEl.addEventListener('input', () => {
+    const rate = getFxRate();
+    if (rate) localStorage.setItem('ujinn_fx_rate', rate.toString());
+    syncPrices('ngn');
+  });
+  ngnEl.addEventListener('input', () => syncPrices('ngn'));
+  usdEl.addEventListener('input', () => syncPrices('usd'));
+}
 
 // AUTH GUARD
 onAuthStateChanged(auth, (user) => {
   if (!user && !window.location.href.includes('index.html')) {
     window.location.href = '../index.html';
   } else if (user) {
+    initPriceSync();
     if (editingId) {
       loadProductData();
     } else {
@@ -46,6 +90,7 @@ async function loadProductData() {
       document.getElementById('name').value = p.name || '';
       document.getElementById('category').value = p.category || 'tops';
       document.getElementById('price').value = p.price || 0;
+      document.getElementById('priceUSD').value = p.priceUSD || 0;
       document.getElementById('stock').value = p.stock || 0;
       document.getElementById('badge').value = p.badge || '';
       document.getElementById('desc').value = p.description || '';
@@ -54,6 +99,9 @@ async function loadProductData() {
       document.getElementById('colorNotes').value = p.colorNotes || '';
       uploadedImages = p.images || [];
       renderImages();
+      if (!p.priceUSD) {
+        syncPrices('ngn');
+      }
     }
   } catch (err) {
     console.error("Error loading product:", err);
@@ -150,6 +198,7 @@ document.getElementById('editorForm').onsubmit = async function(e) {
     name: document.getElementById('name').value,
     category: document.getElementById('category').value,
     price: parseInt(document.getElementById('price').value),
+    priceUSD: parseFloat(document.getElementById('priceUSD').value),
     stock: parseInt(document.getElementById('stock').value),
     badge: document.getElementById('badge').value,
     description: document.getElementById('desc').value,

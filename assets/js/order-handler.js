@@ -33,7 +33,22 @@ function clearCart() {
 }
 
 function formatPrice(price) {
+  if (window.currencyUtils) {
+    const code = window.currencyUtils.getCurrencySync().code;
+    return window.currencyUtils.formatPrice(price, code);
+  }
   return '₦' + Number(price).toLocaleString('en-NG');
+}
+
+function formatPriceWithCode(price, code) {
+  if (window.currencyUtils) return window.currencyUtils.formatPrice(price, code);
+  return '₦' + Number(price).toLocaleString('en-NG');
+}
+
+function resolveCurrency(item) {
+  if (item && item.currency) return item.currency;
+  if (window.currencyUtils) return window.currencyUtils.getCurrencySync().code;
+  return 'NGN';
 }
 
 // ============================================
@@ -59,11 +74,11 @@ function generateOrderText(customer, cart, total, notes, isWhatsApp = true) {
     const size = item.size ? ` (Size: ${item.size.toUpperCase()})` : '';
     const color = item.color ? ` (Color: ${item.color})` : '';
     const quantity = item.quantity || 1;
-    msg += `${index + 1}. ${item.name}${size}${color} x${quantity} — ${formatPrice(item.price * quantity)}\n`;
+    msg += `${index + 1}. ${item.name}${size}${color} x${quantity} — ${formatPriceWithCode(item.price * quantity, resolveCurrency(item))}\n`;
   });
   
   msg += `\n` + divider;
-  msg += `TOTAL: ${formatPrice(total)}\n`;
+  msg += `TOTAL: ${formatPriceWithCode(total, resolveCurrency(cart[0]))}\n`;
   
   if (notes) {
     msg += `\nNOTES:\n${notes}\n`;
@@ -191,14 +206,18 @@ function loadCheckoutSummary() {
             ${sizeStr} ${colorStr}
           </div>
         </div>
-        <span>${formatPrice(sub)}</span>
+        <span>${formatPriceWithCode(sub, resolveCurrency(item))}</span>
       </div>
     `;
   });
   
-  html += `<div class="summary-total"><span>Total</span><span>${formatPrice(total)}</span></div>`;
+  html += `<div class="summary-total"><span>Total</span><span>${formatPriceWithCode(total, resolveCurrency(cart[0]))}</span></div>`;
   summaryDiv.innerHTML = html;
 }
 
 // Auto-run summary on load
 document.addEventListener('DOMContentLoaded', loadCheckoutSummary);
+
+
+
+

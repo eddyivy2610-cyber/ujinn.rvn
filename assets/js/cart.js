@@ -31,7 +31,14 @@ function saveCart() {
   window.dispatchEvent(new Event('cartUpdated'));
 }
 
-function formatPrice(price) {
+function resolveCurrency(item) {
+  if (item && item.currency) return item.currency;
+  if (window.currencyUtils) return window.currencyUtils.getCurrencySync().code;
+  return 'NGN';
+}
+
+function formatPrice(price, currencyCode) {
+  if (window.currencyUtils) return window.currencyUtils.formatPrice(price, currencyCode);
   return '₦' + Number(price).toLocaleString('en-NG');
 }
 
@@ -88,7 +95,7 @@ function renderCart() {
                     </div>
                   </div>
                 </td>
-                <td style="padding: 24px 0; font-size: 14px;">${formatPrice(item.price)}</td>
+                <td style="padding: 24px 0; font-size: 14px;">${formatPrice(item.price, resolveCurrency(item))}</td>
                 <td style="padding: 24px 0;">
                   <div class="quantity-selector" style="display:flex; align-items:center; border: 1px solid var(--warm-gray); width: fit-content; padding: 4px;">
                     <button onclick="updateQuantity(${index}, -1)" style="border:none; background:none; padding: 8px 12px; cursor:pointer;">−</button>
@@ -96,7 +103,7 @@ function renderCart() {
                     <button onclick="updateQuantity(${index}, 1)" style="border:none; background:none; padding: 8px 12px; cursor:pointer;">+</button>
                   </div>
                 </td>
-                <td style="padding: 24px 0; font-size: 14px; font-weight: 500;">${formatPrice(item.price * item.quantity)}</td>
+                <td style="padding: 24px 0; font-size: 14px; font-weight: 500;">${formatPrice(item.price * item.quantity, resolveCurrency(item))}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -108,7 +115,7 @@ function renderCart() {
         <h3 style="font-family: var(--serif); font-size: 24px; margin-bottom: 32px; font-weight: 400;">Selection Summary</h3>
         <div style="display:flex; justify-content:space-between; margin-bottom: 16px; font-size: 14px;">
           <span>Subtotal</span>
-          <span>${formatPrice(subtotal)}</span>
+          <span>${formatPrice(subtotal, resolveCurrency(cartItems[0]))}</span>
         </div>
         <div style="display:flex; justify-content:space-between; padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--warm-gray); font-size: 14px;">
           <span>Shipping</span>
@@ -116,7 +123,7 @@ function renderCart() {
         </div>
         <div style="display:flex; justify-content:space-between; margin-bottom: 40px; font-size: 20px; font-family: var(--serif); font-weight: 500;">
           <span>Total</span>
-          <span>${formatPrice(total)}</span>
+          <span>${formatPrice(total, resolveCurrency(cartItems[0]))}</span>
         </div>
         <button class="btn-primary" onclick="window.location.href='checkout.html'" style="width:100%; justify-content:center;">Complete Purchase</button>
       </div>

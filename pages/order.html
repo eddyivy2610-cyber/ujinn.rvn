@@ -131,6 +131,7 @@
   <a href="#" class="back-link" onclick="window.location.href='cart.html'">← Back to Cart</a>
 </div>
 
+<script src="../assets/js/currency.js"></script>
 <script>
   // ============================================
   // ORDER DATA (from cart or product page)
@@ -172,11 +173,11 @@
       const priceFormatted = formatPrice(item.price);
       const subtotal = item.price * item.quantity;
       message += `${index + 1}. ${item.name}${sizeText} x${item.quantity} — ${priceFormatted} each\n`;
-      message += `   Subtotal: ${formatPrice(subtotal)}\n`;
+      message += `   Subtotal: ${formatPriceWithCode(subtotal, resolveCurrency(item))}\n`;
     });
     
     message += `\n━━━━━━━━━━━━━━━━━━━━\n`;
-    message += `*TOTAL:* ${formatPrice(total)}\n`;
+    message += `*TOTAL:* ${formatPriceWithCode(total, resolveCurrency(cart[0]))}\n`;
     
     if (notes) {
       message += `\n*SPECIAL NOTES:*\n${notes}\n`;
@@ -344,7 +345,7 @@
       message += `${index + 1}. ${item.name}${sizeText} x${item.quantity} — ${priceFormatted}\n`;
     });
     
-    message += `\nTOTAL: ${formatPrice(total)}\n`;
+    message += `\nTOTAL: ${formatPriceWithCode(total, resolveCurrency(cart[0]))}\n`;
     
     if (notes) {
       message += `\nNotes: ${notes}\n`;
@@ -410,12 +411,12 @@
       ${currentCart.map(item => `
         <div class="cart-item">
           <span>${item.name} ${item.size ? `(${item.size})` : ''} x${item.quantity}</span>
-          <span style="font-weight: 600;">${formatPrice(item.price * item.quantity)}</span>
+          <span style="font-weight: 600;">${formatPriceWithCode(item.price * item.quantity, resolveCurrency(item))}</span>
         </div>
       `).join('')}
       <div class="cart-item" style="background: #e8e4de; margin-top: 8px;">
         <strong>Total:</strong>
-        <strong>${formatPrice(calculateTotal(currentCart))}</strong>
+        <strong>${formatPriceWithCode(calculateTotal(currentCart), resolveCurrency(currentCart[0]))}</strong>
       </div>
     `;
   }
@@ -475,3 +476,4 @@
 </script>
 </body>
 </html>
+

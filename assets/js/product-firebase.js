@@ -4,6 +4,9 @@ import { doc, getDoc, collection, getDocs, query, limit } from "https://www.gsta
 
 let currentProduct = null;
 let currentQty = 1;
+let activeCurrency = null;
+let displayPrice = 0;
+let displayCurrency = 'NGN';
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) entry.target.classList.add('visible');
@@ -24,6 +27,9 @@ async function initProduct() {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
+      if (window.currencyUtils) {
+        activeCurrency = await window.currencyUtils.ready();
+      }
       currentProduct = { id: docSnap.id, ...docSnap.data() };
       renderProductDetails();
       renderRelatedItems();
@@ -41,7 +47,12 @@ function renderProductDetails() {
   
   document.title = `${currentProduct.name} — UJINN.RVN`;
   document.querySelector('.product-title').textContent = currentProduct.name;
-  document.querySelector('.price').textContent = `₦${Number(currentProduct.price || 0).toLocaleString()}`;
+  const desiredCode = activeCurrency?.code || 'USD';
+  const picked = window.currencyUtils ? window.currencyUtils.pickPrice(currentProduct, desiredCode) : { value: currentProduct.price || 0, code: 'NGN' };
+  const priceLabel = window.currencyUtils ? window.currencyUtils.formatPrice(picked.value, picked.code) : `₦${Number(picked.value || 0).toLocaleString()}`;
+  displayPrice = picked.value;
+  displayCurrency = picked.code;
+  document.querySelector('.price').textContent = priceLabel;
   document.querySelector('.description').textContent = currentProduct.description || "No description available.";
 
   const mainImg = document.getElementById('mainImage');
@@ -109,20 +120,25 @@ async function renderRelatedItems() {
       .map(doc => ({ id: doc.id, ...doc.data() }))
       .filter(p => p.id !== currentProduct.id);
 
-    grid.innerHTML = related.map((p, i) => `
+    const desiredCode = activeCurrency?.code || 'USD';
+    grid.innerHTML = related.map((p, i) => {
+      const picked = window.currencyUtils ? window.currencyUtils.pickPrice(p, desiredCode) : { value: p.price || 0, code: 'NGN' };
+      const priceLabel = window.currencyUtils ? window.currencyUtils.formatPrice(picked.value, picked.code) : `₦${Number(picked.value || 0).toLocaleString()}`;
+      return `
       <div class="product-card reveal" style="transition-delay:${i * 0.05}s" onclick="location.href='product.html?id=${p.id}'">
         <div class="product-img-wrap">
           <div class="product-img-placeholder">
             ${p.images && p.images[0] ? `<img data-src="${p.images[0]}" alt="${p.name}" loading="lazy" decoding="async">` : `<div style="opacity:0.2;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.62 1.97v4.42a2 2 0 0 0 .76 1.58L7 14.3v6.3a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6.3l4.24-2.87a2 2 0 0 0 .76-1.58V5.43a2 2 0 0 0-1.62-1.97z"/></svg></div>`}
           </div>
-          <div class="quick-add" onclick="event.stopPropagation(); window.addToCartSimple('${p.id}', '${p.name}', ${p.price}, '${p.images?.[0] || ''}')">+ Add to Cart</div>
+          <div class="quick-add" onclick="event.stopPropagation(); window.addToCartSimple('${p.id}', '${p.name}', ${picked.value}, '${p.images?.[0] || ''}', '${picked.code}')">+ Add to Cart</div>
         </div>
         <div class="product-info">
           <div class="product-name">${p.name}</div>
-          <div class="product-price">₦${Number(p.price || 0).toLocaleString()}</div>
+          <div class="product-price">${priceLabel}</div>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
     
     document.querySelectorAll('.product-card.reveal').forEach(el => observer.observe(el));
     if (window.setupLazyImages) window.setupLazyImages(grid);
@@ -157,12 +173,14 @@ window.selectColor = function(color, el) {
   el.classList.add('active');
 };
 
-window.addToCartSimple = function(productId, name, price, image) {
+window.addToCartSimple = function(productId, name, price, image, currencyCode) {
+  const resolvedCurrency = currencyCode || (window.currencyUtils ? window.currencyUtils.getCurrencySync().code : 'NGN');
   const cart = JSON.parse(localStorage.getItem('cart') || '[]');
   const product = {
     id: productId,
     name: name,
     price: price,
+    currency: resolvedCurrency,
     image: image || '',
     quantity: 1,
     size: 'M' // Default for quick add
@@ -191,7 +209,8 @@ window.addToCart = function() {
   const product = {
     id: currentProduct.id,
     name: currentProduct.name,
-    price: currentProduct.price,
+    price: displayPrice,
+    currency: displayCurrency,
     image: currentProduct.images?.[0] || '',
     quantity: currentQty,
     size: size,
@@ -221,7 +240,8 @@ window.buyNow = function() {
   const size = document.querySelector('.size-box.active')?.textContent || 'Default';
   const color = document.querySelector('.color-dot.active')?.title || 'Default';
   const qty = currentQty;
-  const total = currentProduct.price * qty;
+  const total = displayPrice * qty;
+  const label = window.currencyUtils ? window.currencyUtils.formatPrice(total, displayCurrency) : `₦${total.toLocaleString()}`;
   const phone = "2348147396890";
   
   const message = `Hello UJINN.RVN, I would like to place an order:
@@ -230,7 +250,7 @@ Item: ${currentProduct.name}
 Size: ${size}
 Color: ${color}
 Quantity: ${qty}
-Total: ₦${total.toLocaleString()}
+Total: ${label}
 
 Is this piece available for delivery?`;
 

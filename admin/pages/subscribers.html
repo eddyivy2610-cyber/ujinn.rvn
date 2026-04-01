@@ -369,8 +369,14 @@ function renderPage(page) {
   }
 
   body.innerHTML = slice.map(s => {
-    const name  = [s.fields?.find(f => f.key==='name')?.value, s.fields?.find(f => f.key==='last_name')?.value]
-                  .filter(Boolean).join(' ') || '—';
+    const fields = s.fields;
+    const getField = (key) => {
+      if (Array.isArray(fields)) return fields.find(f => f.key === key)?.value;
+      if (fields && typeof fields === 'object') return fields[key];
+      return undefined;
+    };
+    const name  = [getField('name'), getField('last_name')]
+                  .filter(Boolean).join(' ') || '???';
     const date  = s.created_at ? new Date(s.created_at).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}) : '—';
     const status = s.status || 'unknown';
     const dotCls = status === 'active' ? 'dot-active' : status === 'unsubscribed' ? 'dot-unsubscribed' : 'dot-unconfirmed';

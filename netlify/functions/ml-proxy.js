@@ -14,6 +14,13 @@ exports.handler = async (event, context) => {
     return { statusCode: 400, body: JSON.stringify({ message: "Path parameter is required" }) };
   }
 
+  if (!MAILERLITE_GROUP_ID && path.includes('{GROUP_ID}')) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: "Server configuration error: Missing Group ID" })
+    };
+  }
+
   // Determine if it needs group ID replacement
   const targetPath = path.replace('{GROUP_ID}', MAILERLITE_GROUP_ID);
   

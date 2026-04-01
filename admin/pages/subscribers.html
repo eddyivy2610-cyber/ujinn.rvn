@@ -279,11 +279,16 @@
 <script src="../assets/js/newsletter.js"></script>
 <script>
 // ── Config ────────────────────────────────────────────────────────────────────
-const API     = () => '/.netlify/functions/ml-proxy?path=';
-const GROUP   = () => '{GROUP_ID}'; // Netlify function handles the actual ID
+const API_BASE = '/.netlify/functions/ml-proxy';
+const GROUP    = () => '{GROUP_ID}'; // Netlify function handles the actual ID
 
 const PLACEHOLDER_KEY = '';
 const PAGE_SIZE = 25;
+
+function buildUrl(path, params = {}) {
+  const qs = new URLSearchParams({ path, ...params });
+  return `${API_BASE}?${qs.toString()}`;
+}
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let allSubs = [];
@@ -296,7 +301,6 @@ window.addEventListener('load', async () => {
   setTimeout(() => document.getElementById('loader')?.classList.add('hidden'), 700);
 
   // We rely on Netlify env vars now. Start loading immediately.
-  document.getElementById('configNotice').classList.add('hidden');
   await loadSubscribers();
 });
 
@@ -312,14 +316,20 @@ window.adminLogout = function () {
 // ── Load subscribers from MailerLite ─────────────────────────────────────────
 async function loadSubscribers() {
   try {
-    const url = GROUP()
-      ? `${API()}groups/${GROUP()}/subscribers&limit=1000`
-      : `${API()}subscribers&limit=1000`;
+    const path = GROUP()
+      ? `groups/${GROUP()}/subscribers`
+      : 'subscribers';
 
-    const res  = await fetch(url);
-    const data = await res.json();
+    const res  = await fetch(buildUrl(path, { limit: 1000 }));
+    const data = await res.json().catch(() => ({}));
 
-    if (!res.ok) throw new Error(data?.message || `HTTP ${res.status}`);
+    if (!res.ok) {
+      const msg = data?.message || `HTTP ${res.status}`;
+      if (/missing api key|missing api key or group id|missing group id/i.test(msg)) {
+        document.getElementById('configNotice')?.classList.remove('hidden');
+      }
+      throw new Error(msg);
+    }
 
     allSubs  = data.data || [];
     filtered = [...allSubs];
@@ -332,6 +342,7 @@ async function loadSubscribers() {
     document.getElementById('statUnsub').textContent  = unsub;
 
     renderPage(1);
+    document.getElementById('configNotice')?.classList.add('hidden');
   } catch (err) {
     console.error('[Subscribers]', err);
     document.getElementById('subTableBody').innerHTML =
@@ -407,7 +418,7 @@ window.addSubscriber = async function (e) {
     const payload = { email, groups: GROUP() ? [GROUP()] : [] };
     if (name) payload.fields = { name };
 
-    const res  = await fetch(`${API()}subscribers`, {
+    const res  = await fetch(buildUrl('subscribers'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -433,7 +444,7 @@ window.addSubscriber = async function (e) {
 window.deleteSubscriber = async function (id, email) {
   if (!confirm(`Remove ${email} from your list?`)) return;
   try {
-    const res = await fetch(`${API()}subscribers/${id}`, {
+    const res = await fetch(buildUrl(`subscribers/${id}`), {
       method: 'DELETE'
     });
     if (res.ok || res.status === 204) {

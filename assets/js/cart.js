@@ -78,7 +78,7 @@ function renderCart() {
                 <td style="padding: 24px 0;">
                   <div class="product-cell" style="display:flex; gap: 20px; align-items:center;">
                     <div class="product-thumb" style="width: 80px; height: 100px; background: #eee; flex-shrink:0;">
-                      ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover;">` : '👕'}
+                      ${item.image ? `<img data-src="${item.image}" alt="${item.name}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;">` : '👕'}
                     </div>
                     <div class="product-details">
                       <h4 style="font-size: 15px; font-weight: 500; margin-bottom: 4px;">${item.name}</h4>
@@ -122,6 +122,7 @@ function renderCart() {
       </div>
     </div>
   `;
+  if (window.setupLazyImages) window.setupLazyImages(container);
 }
 
 // ============================================
